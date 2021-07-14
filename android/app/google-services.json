@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "956411425691",
+    "project_id": "smartbasket-2da9c",
+    "storage_bucket": "smartbasket-2da9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956411425691:android:97abb1c571201fc3b6e73e",
+        "android_client_info": {
+          "package_name": "com.smartbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956411425691-3ng1fvlc8mi9teg3hfdnb8b1gcpel6ai.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smartbook",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "956411425691-5dsqrmluf9lhh4uvlcn3vhqc4hifh4tp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEZ7sP9s2sMozN157vfqcnhAsjabtJ30U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956411425691-5dsqrmluf9lhh4uvlcn3vhqc4hifh4tp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
