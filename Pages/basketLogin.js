@@ -34,6 +34,8 @@ function basketLogin ({navigation}) {
     const [roomPass, setRoomPass] = useState('');
 
     
+
+    
 const detailsCheck = async() => {
     const snapshot = await collectionRef.where('room', '==', roomName).get()
     
@@ -63,6 +65,8 @@ const detailsCheck = async() => {
         }
     }
 }
+
+
 
 const roomUpdate = async() => {
     firestore()

@@ -77,18 +77,23 @@ const testDATA = [
     const [snch, setSnch] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const [baskets, setBaskets] = useState([])
+
     useEffect(async() => {
       setLoading(true)
 
       const roomName = await AsyncStorage.getItem('roomName')
+
+
       
       const snapshot = await collectionRef.where('room', '==', roomName).get()
       try{
       if(!snapshot.empty) {
-        
+
         const docCheck = snapshot.docs[0].data()
 
         if(docCheck.updated) {
+          
           const data1 = docCheck.frvg
           const data2 = docCheck.mtmlk
           const data3 = docCheck.snch
@@ -101,6 +106,7 @@ const testDATA = [
         }
 
         if (docCheck.creator === uid) {
+          
           setAdmin(true)
           setLoading(false)
           console.log(admin)

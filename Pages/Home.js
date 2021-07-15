@@ -35,29 +35,59 @@ function Home () {
         {basketName:'Presents', previewItem: require('../Assets/images/tomato.png'), numberOfItems: '12', updateTime: 'Last update : 16:50', key: '3'}
     ])
 
-    const[maybe, setMaybe] = useState(null);
+    const[maybe, setMaybe] = useState([]);
+    const[justTry, setJustTry] = useState(null)
+    const [pureData, setPureData] = useState([])
 
-    useEffect(async() => {
-        const userRef = db.collection('users').doc(uid).collection('baskets')
+    useEffect(async () => {
+        
+        async function getBasket (name) {
+            
+            const getBasket = await collectionRef.doc(name).get()
+            
+            try {
+                const rawData = getBasket.data()
+
+                const updatedData = [...pureData, {rawData}]
+                setPureData(updatedData)
+                console.log(pureData)
+
+            } catch(e) {
+                console.log(e)
+            }
+
+        }
+
         const basketRef = db.collectionGroup('userList')
         const snapshot = await basketRef.where('id', '==', uid).get()
 
         try {
             
             if(!snapshot.empty) {
-                const baskets = []
-                snapshot.forEach(element => {
-                    const basketName = element.data()
-                    
-                    baskets.push(basketName.basketName)
-                    console.log(baskets)
+                const just = []
+                snapshot.forEach( async doc => {
+
+                    const basket = doc.data()
+                    just.push(basket.basketName)
+                       setJustTry(just)
+
+                       const bn = basket.basketName
+                       await getBasket(bn)
+                       console.log(bn)
+                      
                 })
                 
             } else {console.log('No Rooms for this user')}
         } catch(e) {
             console.log(e)
         }
-    })
+
+       
+        
+    }, [])
+
+    
+
     return (
         <View style={styles.homeBackGround}>
             <StatusBar  backgroundColor='#121518'/>
