@@ -39,8 +39,10 @@ const userRegister = async () => {
     firebase.auth().onAuthStateChanged(async (user)=> {
         if (user) {
             const uid = user.uid;
-
+            await AsyncStorage.setItem('uid', uid)
             
+
+            .then
 
             firestore()
             .collection('users')
@@ -51,6 +53,8 @@ const userRegister = async () => {
             })
 
             await AsyncStorage.setItem('authState', JSON.stringify(true))
+            const maybe = await AsyncStorage.getItem('uid')
+            console.log(maybe)
             
         } else {
             // User is signed out!
@@ -87,7 +91,7 @@ const nickCheckAndSave = async () => {
     return(
         
         <View style={styles.createBackGround}>
-            <StatusBar  backgroundColor='#121518'/>
+            <StatusBar  backgroundColor='#000000'/>
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}
@@ -112,7 +116,7 @@ const nickCheckAndSave = async () => {
                     userRegister()
                     
                   }} >
-                    <Text style={{textAlign: 'center'}}>READY!</Text>
+                    <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>READY!</Text>
                 </TouchableOpacity>
             </View>
         </View>

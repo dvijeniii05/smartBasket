@@ -21,24 +21,37 @@ import {
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
   import auth from '@react-native-firebase/auth';
+import { useFocusEffect } from '@react-navigation/native';
   
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
-  const user = firebase.auth().currentUser
-  const uid = user.uid
+ 
+  
 
 
 function Create ({navigation}) {
 
     const [roomName, setRoomName] = useState('');
     const [roomPass, setRoomPass] = useState('');
+    const [uid, setUid] = useState(null)
 
-    
-    
+    useFocusEffect(
+        React.useCallback(() => {
+            async function settingUid() {
+                const getUid = await AsyncStorage.getItem('uid')
 
+                setUid(getUid)
+            }
+
+            settingUid()
+        }, [])
+    )
+    
+   
 
     const detailsCheck = async () => {
-        console.log(roomName)
+        
+        
         const snapshot = await collectionRef.where('room', '==', roomName).get()
         if(snapshot.empty) {
         if(roomName === '' || roomPass === '') {
@@ -50,6 +63,7 @@ function Create ({navigation}) {
                     
 
                 await roomGen()
+                
                 await userUpdate()
 
                   .then 
@@ -69,11 +83,15 @@ function Create ({navigation}) {
         .set({
             room: roomName,
             password: roomPass,
-            creator: uid
+            creator: uid,
             
         })
+
+        
         
     }
+
+    
 
     const userUpdate = async () => {
         firestore()
@@ -84,38 +102,40 @@ function Create ({navigation}) {
         .set({
             basketName: roomName
         })
+
+        firestore()
+        .collection('baskets')
+        .doc(roomName)
+        .collection('userList')
+        .doc(uid)
+        .set({
+            id: uid,
+            basketName: roomName
+        })
     }
     return (
         <View style={styles.createBackGround}>
             <View style={styles.createBasket}>
-                <View style={{flexDirection: 'row',alignItems: 'center',}}>
-                <Text style={{
-                    color: 'white',
-                }}>
-                    Basket Name:
-                </Text>
+                <Text style = {styles.enterOrCreateText}>.createBasket</Text>
+                <View style={styles.registerStyle}>
+                
     
                 <TextInput
-                style={styles.roomCreationInputBox}
+                style={styles.textInputBox}
+                placeholder={'Basket name'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomName(text)}
                 />
-                </View>
                 
-                <View style={{flexDirection: 'row', alignItems: 'center',}}>
-                <Text style={{
-                    color: 'white',
-                }}>
-                    Password:
-                </Text>
-    
                 <TextInput
-                style={styles.roomCreationInputBox}
+                style={styles.textInputBox}
+                placeholder={'Password'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomPass(text)}
                 />
+                
                 </View>
                 <TouchableOpacity 
                 style ={styles.registerButton}
@@ -123,7 +143,7 @@ function Create ({navigation}) {
                     detailsCheck()
                     
                 }}>
-                    <Text style={{textAlign: 'center'}}>CREATE!</Text>
+                    <Text style={{textAlign: 'center', fontWeight: 'bold'}}>CREATE!</Text>
                 </TouchableOpacity>
             </View>
         </View>

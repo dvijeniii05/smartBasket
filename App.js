@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import Octicon from 'react-native-vector-icons/Octicons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -39,41 +40,66 @@ import Create from './Pages/Create'
 import Landing from './Pages/Landing'
 import Register from './Pages/Register'
 import Basket from './Pages/Basket'
+import Login from './Pages/Login'
+import Choice from './Pages/CreateOrLogin'
+import ChoiceButton from './elements/choiceButton'
 import {styles} from './AllStyles'
+import { ScreenStack } from 'react-native-screens'
+import 'react-native-gesture-handler'
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
- function Tabnavigator () {
+ function Tabnavigator ({navigation}) {
+
+  const [buttonActive, setButtonActive] = useState(false)
+
+  const buttonChange = () => {
+    setButtonActive(!buttonActive)
+  }
+
   return(
+
+    <> 
+    <View style={[styles.choiceView, buttonActive && {width:250}]}>
+      
+        <ChoiceButton navigation={navigation} onPress={buttonChange}/>
+        
+    </View>
     <Tab.Navigator
-    tabBarOptions={{
-      showLabel: false,
-      activeTintColor: '#f6f881',
-      style :{
+    screenOptions={{
+      tabBarShowLabel: false,
+      tabBarHideOnKeyboard: true,
+      tabBarActiveTintColor: '#FF9C33',
+      headerShown: false,
+      tabBarStyle: {
+        
         position: 'absolute',
         bottom: 25,
         left: 70,
         right: 70,
         borderRadius: 35,
         height: 70,
-        backgroundColor: '#222229',
+        backgroundColor: 'transparent',
         elevation: 0,
         borderTopWidth: 0,     // TO GET RID OFF WHITE LINE ON TOP 
-        
       }
-    }}>
+    }}
+    >
       <Tab.Screen  name='Home' component={Home} options={{
-        tabBarIcon: ({color}) => <Icon name='home' size={32} color={color} />
+        tabBarIcon: ({color}) => <Icon name='home' size={32} color={color} />,
+        tabBarIconStyle: {left: -20}
+
       }}/>
-      <Tab.Screen  name='Create' component={Create} options={{
-        tabBarIcon: ({color}) => <Octicon name='plus' size={32} color={color}/>
-      }}/>
+      
       <Tab.Screen  name='Browse' component={basketLogin} options={{
-        tabBarIcon: ({color}) => <Ionicons name='md-log-in-outline' size={36} color={color} />
+        tabBarIcon: ({color}) => <Ionicons name='md-log-in-outline' size={36} color={color} />,
+        tabBarIconStyle: {left: 20}
       }}/>
     </Tab.Navigator>
+    </>
   )
 };
 
@@ -110,6 +136,9 @@ function App () {
   }
 
   return(
+    
+    <SafeAreaProvider>
+      
     <NavigationContainer 
     initialState={initialState}
       onStateChange={(state) =>
@@ -118,13 +147,24 @@ function App () {
 
       }
     >
-      <Stack.Navigator initialRouteName='Landing' headerMode='none' >
-        <Stack.Screen name='Tabnavigator' component={Tabnavigator} /> 
+      <Stack.Navigator initialRouteName='Landing' screenOptions={{
+        headerShown: false, 
+        gestureEnabled: true, 
+        gestureDirection: 'horizontal',
+        animationTypeForReplace: 'pop'
+        }} >
+        <Stack.Screen name='Tabnavigator' component={Tabnavigator}  /> 
         <Stack.Screen name='Landing' component={Landing}/>
         <Stack.Screen name='Register' component={Register}/>
-        <Stack.Screen name='Basket' component={Basket}/>
+        <Stack.Screen name='Login' component={Login}/>
+        <Stack.Screen name='Basket' component={Basket} options={{ gestureEnabled: false }}/>
+        <Stack.Screen name='createBasket' component={Create}/>
+        <Stack.Screen name='loginBasket' component={basketLogin}/>
       </Stack.Navigator>
     </NavigationContainer>
+    
+    </SafeAreaProvider>
+    
   )
 }
 

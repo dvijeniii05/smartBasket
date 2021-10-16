@@ -25,7 +25,7 @@ import {
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
   const user = firebase.auth().currentUser
-  const uid = user.uid
+  
 
 
 function basketLogin ({navigation}) {
@@ -38,6 +38,7 @@ function basketLogin ({navigation}) {
     
 const detailsCheck = async() => {
     const snapshot = await collectionRef.where('room', '==', roomName).get()
+    const uid = await AsyncStorage.getItem('uid')
     
     console.log(roomName)
     
@@ -46,12 +47,13 @@ const detailsCheck = async() => {
     } else {
         try {
             await AsyncStorage.setItem('roomName', roomName)
+            
                 const docCheck = snapshot.docs[0].data()
     
                 if (docCheck.password === roomPass) {
                     
-                    await roomUpdate()
-                    await userUpdate()
+                    await roomUpdate(uid)
+                    await userUpdate(uid)
 
                     .then
                     navigation.navigate('Basket')
@@ -68,14 +70,14 @@ const detailsCheck = async() => {
 
 
 
-const roomUpdate = async() => {
+const roomUpdate = async(uid) => {
     firestore()
     .collection('baskets')
     .doc(roomName)
     .collection('userList')
     .doc(uid)
     .set({
-        user: roomName,
+        
         id: uid,
         basketName: roomName
 
@@ -83,7 +85,7 @@ const roomUpdate = async() => {
     
 }
 
-const userUpdate = async () => {
+const userUpdate = async (uid) => {
     firestore()
     .collection('users')
     .doc(uid)
@@ -98,30 +100,21 @@ const userUpdate = async () => {
     return (
         <View style={styles.createBackGround}>
             <View style={styles.createBasket}>
-                <View style={{flexDirection: 'row',alignItems: 'center',}}>
-                <Text style={{
-                    color: 'white',
-                }}>
-                    Basket Name:
-                </Text>
+            <Text style = {styles.enterOrCreateText}>.enterBasket</Text>
+                <View style={styles.registerStyle}>
     
                 <TextInput
-                style={styles.roomCreationInputBox}
+                style={styles.textInputBox}
+                placeholder={'Basket name'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomName(text)}
                 />
-                </View>
                 
-                <View style={{flexDirection: 'row', alignItems: 'center',}}>
-                <Text style={{
-                    color: 'white',
-                }}>
-                    Password:
-                </Text>
-    
+                
                 <TextInput
-                style={styles.roomCreationInputBox}
+                style={styles.textInputBox}
+                placeholder={'Password'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomPass(text)}
@@ -133,8 +126,9 @@ const userUpdate = async () => {
                     detailsCheck()
                     
                 }}>
-                    <Text style={{textAlign: 'center'}}>Enter</Text>
+                    <Text style={{textAlign: 'center', fontWeight: 'bold'}}>Enter</Text>
                 </TouchableOpacity>
+                
             </View>
         </View>
     )

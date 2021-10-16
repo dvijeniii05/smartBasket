@@ -19,6 +19,8 @@ import {
 
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
+
+  import productData from '../elements/productData'
   
 import { useCallback } from 'react';
   
@@ -28,26 +30,35 @@ import { useCallback } from 'react';
   const { width: WIDTH } = Dimensions.get('window');
   const { height: HEIGHT } = Dimensions.get('window');
 
-  export default function AmountDropDown (props) {
+  export default function SearchDropDown (props) {
 
-        const {amount} = props
+        const {data} = props
+
+        const tempArray = data.slice(0,3)
 
     return(
         
 
             <View style={{
-                width: 80,
+                position: 'absolute',
+                width: props.size,
+                top: 37,
+                backgroundColor: 'black',
+                zIndex: 2
+                
             }}>
             {
-             
-                amount.map(item => {
+
+                tempArray.map(item => {
                     
                     return(
+                        
                     <TouchableOpacity 
                     onPress = {() => 
                         {
                             props.onPress(),
                         props.changePicked(item)
+                        
                     }
                         
                     } 
@@ -63,6 +74,7 @@ import { useCallback } from 'react';
                         color: 'white'
                     }}>{item}</Text>
                     </TouchableOpacity>
+                    
                     )
                 })
 

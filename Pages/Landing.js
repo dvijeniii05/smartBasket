@@ -19,7 +19,7 @@ import {
   function Landing ({navigation}) {
       return (
           <View style={styles.homeBackGround}>
-              <StatusBar  backgroundColor='#1b1b22'/>
+              <StatusBar  backgroundColor='#000000'/>
               <View style={styles.landingPage}>
                 <Image style={styles.logoMaybe}
                 source={require('../Assets/Logo/maybe.png')}/>
@@ -30,14 +30,14 @@ import {
               
               onPress={() => navigation.navigate('Register')}
               > 
-              <Text style={{textAlign: 'center', color: 'white'}}>Sing Up</Text> 
+              <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>Sing Up</Text> 
               </TouchableOpacity>
               <TouchableOpacity
               
               style={styles.landingButtons}
               onPress={() => navigation.navigate('Login')}
               >
-            <Text style={{textAlign: 'center',color: 'white'}}>Log In</Text>
+            <Text style={{textAlign: 'center',color: 'black', fontWeight: 'bold'}}>Log In</Text>
             </TouchableOpacity>
             </View>
               </View>

@@ -28,19 +28,25 @@ import { useCallback } from 'react';
   const { width: WIDTH } = Dimensions.get('window');
   const { height: HEIGHT } = Dimensions.get('window');
 
-  export default function SearchDropDown (props) {
+  export default function AmountDropDown (props) {
 
-        const {data} = props
+        const {amount} = props
+
+        const tempArray = amount.slice(0,3)
 
     return(
         
 
             <View style={{
-                width: 120,
+                position: 'absolute',
+                width: props.size,
+                backgroundColor: 'black',
+                top: 37,
+                zIndex:2
             }}>
             {
              
-                data.map(item => {
+                tempArray.map(item => {
                     
                     return(
                     <TouchableOpacity 
@@ -48,7 +54,6 @@ import { useCallback } from 'react';
                         {
                             props.onPress(),
                         props.changePicked(item)
-                        
                     }
                         
                     } 
@@ -59,9 +64,11 @@ import { useCallback } from 'react';
                         paddingLeft: 20,
                         borderRadius: 5,
                         
+                        
                     }}>
                     <Text style={{
-                        color: 'white'
+                        color: 'white',
+                        
                     }}>{item}</Text>
                     </TouchableOpacity>
                     )

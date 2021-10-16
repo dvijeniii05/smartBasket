@@ -8,7 +8,7 @@ const {height: HEIGHT} = Dimensions.get('window');
 const styles= StyleSheet.create ({
 
 homeBackGround: {
-    backgroundColor: '#1b1b22',
+    backgroundColor: '#000000',
     flex: 1,
       width: null,
       height: null,
@@ -26,7 +26,9 @@ loader: {
 },
 
 maybeBox: {
-  backgroundColor: '#2E2E38',
+  backgroundColor: '#000000',
+  borderWidth: 1,
+  borderColor: '#FF9C33',
     padding: 20,
     marginVertical: 15,
     marginHorizontal: 35,
@@ -86,7 +88,7 @@ previewItem: {
 },
 
 createBackGround: {
-  backgroundColor: '#1b1b22',
+  backgroundColor: '#000000',
   flex: 1,
     width: null,
     height: null,
@@ -99,7 +101,7 @@ createBackGround: {
 },
 
 backgroundBasket: {
-  backgroundColor: '#1b1b22',
+  backgroundColor: '#000000',
   flex: 1,
     width: null,
     height: null,
@@ -120,8 +122,40 @@ createBasket: {
 
 },
 
+mainContainer: {
+flex:1,
+backgroundColor: '#000000',
+justifyContent: 'center',
+alignItems: 'center'
+},
+
+pickButtons: {
+  width: WIDTH*0.5,
+  height: WIDTH*0.2,
+  margin: 35,
+  borderRadius: 10,
+  backgroundColor: '#F45D01',
+  justifyContent:'center'
+  
+
+},
+
+pickText: {
+  textAlign:'center',
+  color: 'black',
+  fontWeight: 'bold',
+  fontSize: 30,
+},
+
+enterOrCreateText: {
+  fontSize: 25,
+  color: '#F45D01',
+},
+
+
+
 registerStyle: {
-  backgroundColor: '#1b1b22',
+  backgroundColor: 'transparent',
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
@@ -130,12 +164,13 @@ registerStyle: {
 },
 
 textInputBox: {
-  
+  borderWidth: 1,
   width: 200,
-  backgroundColor: '#121216',
+  backgroundColor: '#000000',
   height: 55,
   borderRadius: 8,
   textAlign: 'center',
+  borderColor: '#F45D01',
   marginVertical: 20,
   color: 'white'
   
@@ -160,29 +195,48 @@ registerButton: {
   width: 90,
   height: 35,
   borderRadius: 15,
-  backgroundColor: '#EFF32B',
+  backgroundColor: '#FF9C33',
   justifyContent: 'center',
 
 },
 
 productSearch: {
-  width: 120,
+  flex: 1,
   backgroundColor: '#121216',
   borderRadius: 8,
   textAlign: 'center',
   color: 'white',
-  fontSize: 12,
-  padding: 0
+  fontSize: 15,
+  padding: 0,
+  
 },
 
 amountSearch: {
-  width: 80,
+  flex:1,
   backgroundColor: '#121216',
   borderRadius: 8,
   textAlign: 'center',
   color: 'white',
-  fontSize: 12,
+  fontSize: 15,
   padding: 0
+},
+
+specifySearch: {
+  flex: 1,
+  backgroundColor: '#121216',
+  borderRadius: 8,
+  textAlign: 'center',
+  color: 'white',
+  fontSize: 15,
+  padding: 0
+},
+
+eachItemView: {
+  flexDirection: 'row',
+  marginHorizontal: 0.125*WIDTH,
+  marginBottom: 10,
+  alignItems: 'center',
+  borderColor: 'red'
 },
 
 productList: {
@@ -197,25 +251,40 @@ checkBox: {
     width: 20,
     borderRadius: 3,
     borderWidth: 2,
-    borderColor: '#EFF32B',
+    borderColor: '#FF9C33',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 50
+    marginLeft: 15
 },
 
 addButton: {
-  width: 40,
-  height: 29,
-  backgroundColor: '#EFF32B',
+  flex:1,
+  backgroundColor: 'transparent',
   justifyContent: 'center',
   borderRadius: 25,
-  marginLeft: 20,
+  margin: 15,
+  borderWidth: 3,
+  borderColor: '#FF9C33'
+  
+},
+
+homeButton: {
+  position: 'absolute',
+  left: 10,
+  width: 50,
+  height: 40,
+  backgroundColor: 'transparent',
+  
+  borderRadius: 10,
+  justifyContent: 'center',
+  
 },
 
 addButtonText: {
   textAlign: 'center',
-  fontSize: 12,
-  fontWeight: 'bold'
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#FF9C33'
 },
 
 landingPage: {
@@ -227,7 +296,7 @@ landingPage: {
 logoMaybe: {
   height: 128,
   width: 128,
-  tintColor: '#ABAE0A',
+  tintColor: '#F45D01',
   marginTop: 150
   
 },
@@ -244,10 +313,10 @@ landingButtons: {
   width: 0.3*WIDTH,
   height: 40,
   justifyContent: 'center',
-  backgroundColor: '#121216',
+  backgroundColor: '#FF9C33',
   marginTop:20,
   borderRadius:20,
-  borderColor: 'rgba(239, 243, 43, 0.5)',
+  borderColor: '#000000',
   borderWidth: 1
   
 },
@@ -260,12 +329,58 @@ updateButton: {
   alignItems: 'center',
   position: 'absolute',
   bottom: 20,
-  backgroundColor: '#EFF32B',
+  backgroundColor: '#FF9C33',
   width: 70,
   height: 25,
   borderRadius: 6,
   justifyContent: 'center',
 },
+
+confirmButton: {
+  backgroundColor: 'black',
+  width: 65,
+  height: 25,
+  borderRadius: 6,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+choiceButton: {
+  backgroundColor: 'black',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 80,
+  height: 40,
+  borderRadius: 15,
+  position:'absolute',
+  
+},
+
+choiceColor: {
+  color: '#a2a4ac'
+},
+
+popUpButton: {
+  width: 60,
+  height: 40,
+  borderRadius:20,
+  justifyContent: 'center',
+  backgroundColor: '#FF9C33',
+  alignContent: 'center',
+  
+},
+
+choiceView: {
+  position: 'absolute', 
+  width:50,
+  height:100, 
+  backgroundColor: 'transparent', 
+  zIndex: 99,
+  bottom: 10,
+  alignSelf: 'center',
+  justifyContent: 'center',
+  alignItems: 'center',
+}
 
 
 })

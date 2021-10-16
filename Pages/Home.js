@@ -18,45 +18,37 @@ import {
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
   import auth from '@react-native-firebase/auth'
+  import { useFocusEffect } from '@react-navigation/native'
+
+  import {styles} from '../AllStyles'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
-  const user = firebase.auth().currentUser
-  const uid = user.uid
-   
   
-  import {styles} from '../AllStyles'
+  
 
-
-function Home () {
+function Home ({navigation}) {
     const [card, setCard] =useState([
         {basketName:'Family Basket', previewItem: require('../Assets/images/bread.png'), numberOfItems: '21', updateTime: 'Last update : 20:00', key: '1'},
         {basketName:'My Basket', previewItem: require('../Assets/images/eggplant.png'), numberOfItems: '4', updateTime: 'Last update : 14:20', key: '2'},
         {basketName:'Presents', previewItem: require('../Assets/images/tomato.png'), numberOfItems: '12', updateTime: 'Last update : 16:50', key: '3'}
     ])
 
-    const[maybe, setMaybe] = useState([]);
-    const[justTry, setJustTry] = useState(null)
-    const [pureData, setPureData] = useState([])
+    
+    const[basketNames, setBasketNames] = useState(null)
+    const[temp, setTemp] = useState(null)
+    const[ready, setReady] = useState(false)
+    const[noBaskets, setNoBaskets] = useState(true)
+    
 
-    useEffect(async () => {
+    useFocusEffect(
+        React.useCallback( () => {
+
+            async function getBAskets() {
+
+        const uid = await AsyncStorage.getItem('uid')
         
-        async function getBasket (name) {
-            
-            const getBasket = await collectionRef.doc(name).get()
-            
-            try {
-                const rawData = getBasket.data()
-
-                const updatedData = [...pureData, {rawData}]
-                setPureData(updatedData)
-                console.log(pureData)
-
-            } catch(e) {
-                console.log(e)
-            }
-
-        }
 
         const basketRef = db.collectionGroup('userList')
         const snapshot = await basketRef.where('id', '==', uid).get()
@@ -64,48 +56,130 @@ function Home () {
         try {
             
             if(!snapshot.empty) {
-                const just = []
+                const allBasketsNames = []
                 snapshot.forEach( async doc => {
 
                     const basket = doc.data()
-                    just.push(basket.basketName)
-                       setJustTry(just)
+                    const bn = basket.basketName
+                    allBasketsNames.push(bn)
+                    
+                       
 
-                       const bn = basket.basketName
-                       await getBasket(bn)
-                       console.log(bn)
-                      
+                       setNoBaskets(false)
+
                 })
+
+                setBasketNames(allBasketsNames)
                 
-            } else {console.log('No Rooms for this user')}
+            } else {
+                console.log('No Rooms for this user')
+                
+                setNoBaskets(true)
+            }
         } catch(e) {
             console.log(e)
-        }
+        } };
 
-       
-        
-    }, [])
+        getBAskets()
+
+        }, [])
+    )
 
     
 
+    useEffect(async() => {
+
+        if(basketNames === null) {
+            alert('No baskets for this user')
+        } else {
+            
+            async function createList(basket) {
+                const getBasket = await collectionRef.doc(basket).get()
+                try {
+        
+                    const rawData = getBasket.data()
+                    
+                    return rawData
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+            const newData = await Promise.all(basketNames.map(createList))
+            setTemp(newData)
+            
+            
+        }
+
+        
+    }, [basketNames])
+
+    useEffect(() => {
+        if(temp !== null) {
+         
+        setReady(true)
+        
+        }
+    }, [temp])
+
+    const detailsSet = async(room) => {
+
+
+        await AsyncStorage.setItem('roomName', room)
+
+        .then 
+        navigation.navigate('Basket')
+    }
+
+    /* async function createList(basket) {
+        const getBasket = await collectionRef.doc(basket).get()
+        try {
+
+            const rawData = getBasket.data()
+            
+            return rawData
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const newData = await Promise.all(basketNames.map(createList))
+    setTemp(newData)  */
+
     return (
         <View style={styles.homeBackGround}>
-            <StatusBar  backgroundColor='#121518'/>
+            <StatusBar  backgroundColor='#000000'/>
+        {noBaskets && <TouchableOpacity
+        style={styles.maybeBox}
+        onPress={() => navigation.navigate('createBasket')}
+        >
+            <Text style={{
+                textAlign: 'center',
+                fontSize: 30,
+                color: '#a2a4ac'
 
-         <FlatList
-         data={card}
-         renderItem={({item}) => (
-            <View style={styles.maybeBox}>
-                <View style={styles.containerMaybe}>
-                    <Text style={styles.basketName}> {item.mainText} </Text>
-                    <Text style={styles.numberOfItems}>{item.numberOfItems}</Text>
-                    <Text style={styles.updateTime}> {item.updateTime}</Text>
-                </View>
-                <Image source= {item.previewItem} style={styles.previewItem}/>
-            </View>
+            }}>
+                Create Basket
+            </Text>
+
+        </TouchableOpacity>
+
+        }
+        {ready && <FlatList
+                data={temp}
+                renderItem={({item}) => (
+                    <TouchableOpacity style={styles.maybeBox} onPress={() => {
+                        detailsSet(item.room)
+                    }}>
+                        <View style={styles.containerMaybe}>
+                            <Text style={styles.basketName}> {item.room} </Text>
+                            <Text style={styles.numberOfItems}>{item.items}</Text>
+                            <Text style={styles.updateTime}>Updated: {item.time}</Text>
+                        </View>
+                    
+                </TouchableOpacity>
          )}
          
-         />
+         />}
+         
             {/* <View style={styles.maybeBox}>
             <Text style={styles.mainText}> Family Basket </Text>
             <Image source={cardOneItem} style={styles.previewItem}/>
