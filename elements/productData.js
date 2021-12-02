@@ -299,14 +299,14 @@ const productData = [
 
     {
       name: 'saus',
-      type: 'mtmlk'
+      type: 'meat'
     },
 
 // SNACKS & CHOCOLATE
 
     {
       name: 'mars',
-      type: 'snch'
+      type: 'snacks'
     }
   ]
 

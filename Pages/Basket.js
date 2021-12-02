@@ -18,7 +18,10 @@ import {
     SectionList,
     LogBox,
     ActivityIndicator,
-    Modal
+    Modal,
+    SafeAreaView,
+    Keyboard,
+    TouchableWithoutFeedback
   
   } from 'react-native';
   import SearchDropDown from '../elements/SearchDropDown'
@@ -36,22 +39,42 @@ import {
   import format from 'date-fns/format'
 
   import productData from '../elements/productData'
-  import images from '../Assets/images/products/index'
+  import images from '../Assets/images/index'
   import pickerArray from '../elements/picker';
   import ModalPopup from '../elements/ModaPopUp';
+  import SQlite from 'react-native-sqlite-storage'
+  import DropDownPicker from 'react-native-dropdown-picker'
   
   
 
 import { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useFocusEffect } from '@react-navigation/core';
-import { color } from 'react-native-reanimated';
+
 
   
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
-  const user = firebase.auth().currentUser
+  
 
+  successcb = () => {
+    console.log('database open')
+  }
+
+  errorcb = () => {
+    console.log('failed')
+  }
+
+  
+  
+  const sqldb = SQlite.openDatabase({name: 'dbMaybe.db', createFromLocation: '~dbMaybe.db'}, successcb, errorcb)
+  
+  
+  const HideKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      {children}
+    </TouchableWithoutFeedback>
+  );
   
 
   const { width: WIDTH } = Dimensions.get('window');
@@ -62,63 +85,131 @@ import { color } from 'react-native-reanimated';
 
     const [admin, setAdmin] = useState(false)
 
+    const [database, setDatabase] = useState(null)
+
     const [frvg, setFrvg] = useState([])
     const [mtmlk, setMtmlk] = useState([])
     const [snch, setSnch] = useState([])
+    const [cupb, setCupb] = useState([])
+    const [dess, setDess] = useState([])
+    const [drinks, setDrinks] = useState([])
+    const [hlth, setHlth] = useState([])
+    const [house, setHouse] = useState([])
+    const [kids, setKids] = useState([])
+
+
     const [loading, setLoading] = useState(true)
 
     const [basketName, setBasketName] = useState(null)
+    const [ready, setReady] = useState(false)
+    const [visBasket, setVisBasket] = useState(null)
 
     const [visible, setVisible] = useState(false)
+    const [visOrNot, setVisOrNot] = useState(false)
+
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+      {label: 'Fruit & Veg', value: 'frvg'},
+      {label: 'Meats & Fish', value: 'mtmlk'},
+      {label: 'Snacks & Chocolate', value: 'snch'},  // ADD PRODUCTS HERE
+      {label: 'Cupboard & Pets', value: 'cupb'},
+      {label: 'Desserts & Bread', value: 'dess'},
+      {label: 'Drinks', value: 'drinks'},
+      {label: 'Health & Beauty', value: 'hlth'},
+      {label: 'Household', value: 'house'},
+      {label: 'Kids', value: 'kids'}
+    ]);
 
     
 
-    useEffect(async() => {
-      setLoading(true)
+    useEffect(() => {
 
-      const roomName = await AsyncStorage.getItem('roomName')
+      async function fetchData() {
+        setLoading(true)
 
-      setBasketName(roomName)
+        const roomName = await AsyncStorage.getItem('roomName')
+  
+        setBasketName(roomName)
 
-      const snapshot = await collectionRef.where('room', '==', roomName).get()
-      try{
-      if(!snapshot.empty) {
-        const uid = await AsyncStorage.getItem('uid')
-        const docCheck = snapshot.docs[0].data()
-
-        if(docCheck.updated) {
-          
-          const data1 = docCheck.frvg
-          const data2 = docCheck.mtmlk
-          const data3 = docCheck.snch
-
-          setFrvg(data1)
-          setMtmlk(data2)
-          setSnch(data3)
-          setLoading(false)
-          console.log(docCheck.mtmlk)
-        }
-
-        if (docCheck.creator === uid) {
-          
-          setAdmin(true)
-          setLoading(false)
-          console.log(admin)
+        const visualBasket = () => {if(roomName.length <= 12) {
+          return roomName
         } else {
-          setAdmin(false)
+          return roomName.slice(0, 12) + ".."
+        }}
+        
+        setVisBasket(visualBasket)
+  
+        sqldb.transaction((tx)=> {
+          tx.executeSql('SELECT * FROM products', [], (tx, results) => {
+            let len = results.rows.length
+            if(len > 0) {
+              let tempArrray = [];
+              for(let i = 0; i < len; i++){
+                tempArrray.push(results.rows.item(i))
+              }
+              
+              setDatabase(tempArrray)
+              
+            } else { console.log('Results.rows = empty')}
+          })
+        })
+  
+        const snapshot = await collectionRef.where('room', '==', roomName).get()
+        try{
+        if(!snapshot.empty) {
+          const uid = await AsyncStorage.getItem('uid')
+          const docCheck = snapshot.docs[0].data()
+  
+          if(docCheck.updated) {
+            
+            const data1 = docCheck.frvg
+            const data2 = docCheck.mtmlk
+            const data3 = docCheck.snch
+            const data4 = docCheck.cupb
+            const data5 = docCheck.dess
+            const data6 = docCheck.drinks
+            const data7 = docCheck.hlth
+            const data8 = docCheck.house
+            const data9 = docCheck.kids
+  
+            setFrvg(data1)
+            setMtmlk(data2)
+            setSnch(data3)
+            setCupb(data4)
+            setDess(data5)
+            setDrinks(data6)
+            setHlth(data7)
+            setHouse(data8)
+            setKids(data9)
+
+            setLoading(false)
+            setReady(true)
+            
+          }
+  
+          if (docCheck.creator === uid) {
+            
+            setAdmin(true)
+            setLoading(false)
+            
+          } else {
+            setAdmin(false)
+            setLoading(false)
+          }
+        
+        } else {
           setLoading(false)
+          alert('Something wrong')
+        } 
+      }
+        catch {
+          alert('Something wrong')
         }
-      
-      } else {
-        setLoading(false)
-        alert('Something wrong')
-      } 
-    }
-      catch {
-        alert('Something wrong')
       }
       
-      LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+      fetchData()
+      
 
   }, [])
 
@@ -146,9 +237,17 @@ import { color } from 'react-native-reanimated';
 
     const imageSelect = picker => {
 
-      const tempArray = pickerArray
+      const temp = images[picker]
 
-      return tempArray[picker]
+     /* const tempArray = pickerArray
+      const check = tempArray[picker] */
+
+      if (temp) {
+        return images[picker]
+      } else {
+        return images['newProduct']
+      }
+      
     }
     
     //** SEARCH FOR PRODUCTS AND AMOUNT */
@@ -158,18 +257,21 @@ import { color } from 'react-native-reanimated';
          setSearching(true)
          const temp = text.toLowerCase()
 
-         const tempProductNames = productData.map(item =>  {
+         const tempProductNames = database.map(item =>  {
            
           return item.name
       }) 
       setProductNames(tempProductNames)
          const tempList = tempProductNames.filter(item => {
-           if(item.match(temp)) 
+           if(item.match(temp)) {
            return item
-         
+           } else {
+             setPickedProduct(temp)
+             
+           }
          })
           setFiltered(tempList)
-          console.log(tempList)
+          
 
        } else {
           setSearching(false)
@@ -184,7 +286,7 @@ import { color } from 'react-native-reanimated';
 
         const tempList = amount.filter(item => {
           if(item.match(temp))
-          return item
+          return item  //  ADD ELSE STATEMENT TO BE THE SAME AS PICKEDPRODUCT
         })
           setAmountFilt(tempList)
           
@@ -197,22 +299,32 @@ import { color } from 'react-native-reanimated';
     const onLayout = (event) => {
       const {width} = event.nativeEvent.layout
 
-      console.log(width)
+      
       setSearchWidth(width)
-      console.log(searchWidth)
+      
     }
 
 
     //* ADD PRODUCT BUTTON AND DELETE PRODUCT FROM LIST*/
 
     const addNewProduct = () => {
+      
       if(pickedProduct !== null && pickedAmount !== null) {
-        const typeSearch = productData.filter(obj => {
+        
+        const typeSearch = database.filter(obj => {
+          
           return obj.name === pickedProduct
           
         })
 
+        if (typeSearch.length === 0) {
+
+          setVisOrNot(true)
+          
+        }
+
         const finalType = typeSearch.map(item => {
+          
           return item.type
         })
 
@@ -229,71 +341,72 @@ import { color } from 'react-native-reanimated';
 
      //* TO OVERCOME REPEATED PRODUCTS */
 
-        const tempFruits = frvg.map(item => {
-          return item.key
-        })
         
+        // NEW FUNCTIONS TO CHECK DOUPLCIATES AND ADD PRODUCTS USING switch{}
+        
+        function checker (specs)  {
 
-        const fruitCheck = tempFruits.filter(item => {
-          if(item.match(checkKey)) {
-            return item
-          } else { return null}
-        })
+          const firstCheck = specs.map(item=> {
+            return item.key
+          })
 
-        const tempMeat = mtmlk.map(item => {
-          return item.key
-        })
-  
-        const meatCheck = tempMeat.filter(item => {
-          if(item.match(checkKey)) {
-            return item
-          } else { return null}
-        })
+          const secondCheck = firstCheck.filter(item => {
+            if(item.match(checkKey)) {
+              return item
+            } else { return null}
+          })
+          return secondCheck[0]
+        }
 
-        const tempSnacks = snch.map(item => {
-          return item.key
-        })
-  
-        const snacksCheck = tempSnacks.filter(item => {
-          if(item.match(checkKey)) {
-            return item
-          } else { return null}
-        })
-
-          if(stringtype === 'frvg' ) {
-            
-
-            if(fruitCheck[0]) { 
+        function addProduct (type, setSpec) {
+          if(checker(type)) { 
               
-              alert('Same product is added')} 
-              else {
-              const newDATA = [...frvg, {productName: pickedProduct, amountOf: pickedAmount, productSpecs: specs, productPreview: nameString, key: pickedProduct+pickedAmount+specs, completed: false, productType: stringtype}]
-              setFrvg(newDATA)
+            alert('Same product is added')} 
+            else {
+            const newDATA = [...type, {productName: pickedProduct, amountOf: pickedAmount, productSpecs: specs, productPreview: nameString, key: pickedProduct+pickedAmount+specs, completed: false, productType: stringtype}]
+            setSpec(newDATA)
+            Keyboard.dismiss()
 
-                }
-            } 
+              }
+        }
 
-          else if (stringtype === 'mtmlk') {
+        switch(stringtype) {
+          case 'frvg': 
+           addProduct(frvg, setFrvg);
+          break;
 
-      
-            if(meatCheck[0]) { 
-              alert('Same product is added')} 
-              else {
-              const newDATA = [...mtmlk, {productName: pickedProduct, amountOf: pickedAmount, productSpecs: specs, productPreview: require('../Assets/images/products/pineapple.png'), key: pickedProduct+pickedAmount, completed: false, productType: stringtype}]
-              setMtmlk(newDATA)
-                
-                } 
-            }
-          else if (stringtype === 'snch') {
+          case 'meat':
+            addProduct(mtmlk, setMtmlk);
+          break;
 
-            if(snacksCheck[0]) { 
-              alert('Same product is added')} 
-              else {
-              const newDATA = [...snch, {productName: pickedProduct, amountOf: pickedAmount, productSpecs: specs, productPreview: require('../Assets/images/products/pineapple.png'), key: pickedProduct+pickedAmount, completed: false, productType: stringtype}]
-              setSnch(newDATA)
-               
-                }
-            }
+          case 'snacks':
+            addProduct(snch, setSnch);
+          break;
+
+          case 'cupb':
+            addProduct(cupb, setCupb);
+          break;
+
+          case 'dessbread':
+            addProduct(dess, setDess);
+          break;
+
+          case 'drinks':
+            addProduct(drinks, setDrinks);
+          break;
+
+          case 'hlthbty':
+            addProduct(hlth, setHlth);
+          break;
+
+          case 'house':
+            addProduct(house, setHouse);
+          break;
+
+          case 'kids':
+            addProduct(kids, setKids);
+          break;
+        }
     
     } else {
          
@@ -302,23 +415,70 @@ import { color } from 'react-native-reanimated';
     }
 
     const deleteProduct = (id, type) => {
+
+      function deleting (type, setSpec) {
+        const newarr = type.filter(item => item.key !== id)
+        setSpec(newarr)
+      }
       
       if(admin) {
-      const stringType = type.toString() 
-      if(stringType === 'frvg') {
+        const stringType = type.toString() 
+        switch(stringType){
+          case 'frvg':
+            deleting(frvg, setFrvg)
+          break;
+
+          case 'meat':
+            deleting(mtmlk, setMtmlk);
+          break;
+
+          case 'snacks':
+            deleting(snch, setSnch);
+          break;
+
+          case 'cupb':
+            deleting(cupb, setCupb);
+          break;
+
+          case 'dessbread':
+            deleting(dess, setDess);
+          break;
+
+          case 'drinks':
+            deleting(drinks, setDrinks);
+          break;
+
+          case 'hlthbty':
+            deleting(hlth, setHlth);
+          break;
+
+          case 'house':
+            deleting(house, setHouse);
+          break;
+
+          case 'kids':
+            deleting(kids, setKids);
+          break;
+
+        }
+      } else {
+        alert('You cannot delete products in this basket')
+      }
+      /* const prodType = type.toString() 
+      if(prodType === 'frvg') {
       const afterDeleting = frvg.filter(item => item.key !== id)
       setFrvg(afterDeleting)
       } 
-      else if (stringType === 'mtmlk') {
+      else if (prodType === 'mtmlk') {
         const afterDeleting = mtmlk.filter(item => item.key !== id)
       setMtmlk(afterDeleting)
       } 
-      else if (stringType === 'snch') {
+      else if (prodType === 'snch') {
         const afterDeleting = snch.filter(item => item.key !== id)
       setSnch(afterDeleting)
       }} else {
         alert('You cannot delete products in this basket')
-      }
+      } */
     }
 
     const clearProductInput = () => {
@@ -333,13 +493,91 @@ import { color } from 'react-native-reanimated';
       setSpecs(null)
     }
     
+//* ADD NEW PRODUCT TO DATABASE */
+ const addToDb = async () => {
+try { 
+   await sqldb.transaction(async(tx)=> {
+     
+     await tx.executeSql('INSERT INTO products VALUES (?,?)', [pickedProduct, value], )
+  })
 
+  sqldb.transaction(async(tx)=> {
+    await tx.executeSql('SELECT * FROM products', [], (tx, results) => {
+      let len = results.rows.length
+      if(len > 0) {
+        let tempArrray = [];
+        for(let i = 0; i < len; i++){
+          tempArrray.push(results.rows.item(i))
+        }
+        
+        setDatabase(tempArrray)
+        
+      } else { console.log('Results.rows = empty')}
+    })
+  })
+
+   setVisOrNot(false)
+   setLoading(false)
+} catch (err){
+  alert(err)
+}
+  
+ }
 
     //* CHECKBOX PART */
     const triggerSelect = (id, type) => {
-      
+
       const stringType = type.toString()
-      if(stringType === 'frvg') {
+      
+
+      function triggerAction (setter) {
+
+        setter(prev =>
+          prev.map(
+            item => item.key === id
+            ? {...item, completed: !item.completed}
+            : item
+          ))
+      }
+      
+      switch(stringType){
+        case 'frvg':
+          triggerAction(setFrvg);
+        break;
+
+        case 'meat':
+          triggerAction(setMtmlk);
+          break;
+
+          case 'snacks':
+            triggerAction(setSnch);
+          break;
+
+          case 'cupb':
+            triggerAction(setCupb);
+          break;
+
+          case 'dessbread':
+            triggerAction(setDess);
+          break;
+
+          case 'drinks':
+            triggerAction(setDrinks);
+          break;
+
+          case 'hlthbty':
+            triggerAction(setHlth);
+          break;
+
+          case 'house':
+            triggerAction(setHouse);
+          break;
+
+          case 'kids':
+            triggerAction(setKids);
+          break;
+      }
+     /* if(stringType === 'frvg') {
       setFrvg(prev => 
         prev.map(
         item => item.key === id
@@ -359,7 +597,7 @@ import { color } from 'react-native-reanimated';
             item => item.key === id
             ? {...item, completed: !item.completed}
             : item
-          )) }
+          )) } */
     
     }
     
@@ -367,7 +605,7 @@ import { color } from 'react-native-reanimated';
 
         const onPress = () => {
           triggerSelect(id, type)
-          console.log(id)
+          
         };
 
         return (
@@ -381,10 +619,60 @@ import { color } from 'react-native-reanimated';
         )
       }
 
+    //* DELETE BASKET AND RETURN TO "HOME SCREEN */
+
+    const  deleteBasket = async () => {
+
+      const uid = await AsyncStorage.getItem('uid')
+try {
+firestore()
+.collection('baskets')
+.doc(basketName)
+.collection('userList')
+.doc(uid).delete()
+
+.then 
+        navigation.navigate('Tabnavigator', {screen: 'Home'})
+
+console.log('basket deleted ')
+
+} catch(E) { 
+  console.log(E)
+
+}
+    }
+
+  //* RENDER FOR EACH HEADER */
+
+const renderEachHeader = (section) => {
+  if(section.data.length > 0) {
+    
+    return (
+      <Text style={{
+        fontSize: 20,
+        color: 'white',
+        fontFamily: 'Righteous-Regular',
+        textAlign: 'center',
+        marginBottom: 10
+       }}>{section.title}</Text>
+    )
+  } else {
+    return null
+  }
+}
+
+
   //* SPECS RENDER FOR EACH ITEM  */
 
       const renderEachItem = (item) => {
 
+function trim () {
+  if(item.productName.length <= 9) {
+    return item.productName
+  } else {
+    return item.productName.slice(0,9) + ".."
+  }
+}
 
         if(item.productSpecs === null ) {
           
@@ -399,10 +687,10 @@ import { color } from 'react-native-reanimated';
             <Image source={imageSelect(item.productPreview)} resizeMode='contain' style={{height: 20,
             width: 20,}} />
             <Text style={[styles.productList, {
-              marginLeft: 30, width: 50
-            }]} >{item.productName}</Text>
+              marginLeft: 30, width: 80
+            }]} >{trim()}</Text>
             <Text style={[styles.productList, {
-              marginLeft: 50,  width: 50
+              marginLeft: 30,  width: 50
             }]}>{item.amountOf}</Text>
             
             <CheckBox
@@ -466,7 +754,7 @@ import { color } from 'react-native-reanimated';
                       height: '65%',
                       textAlign: 'center',
                       fontSize: 16
-                      }}>{item.productSpecs}</Text>
+                      }}> {item.productSpecs}</Text>
                     <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={{
                         width:70,
                         height:30,
@@ -491,16 +779,14 @@ import { color } from 'react-native-reanimated';
               marginHorizontal: 0.125*WIDTH,
               marginBottom: 10,
               alignItems: 'center',
-              
-              
             }}> 
               <Image source={imageSelect(item.productPreview)} resizeMode='contain' style={{height: 20,
               width: 20,}} />
               <Text style={[styles.productList, {
-                marginLeft: 30, width: 50
-              }]} >{item.productName}</Text>
+                marginLeft: 30, width: 80
+              }]} >{trim()}</Text>
               <Text style={[styles.productList, {
-                marginLeft: 50,  width: 50
+                marginLeft: 30,  width: 50
               }]}>{item.amountOf}</Text>
               
               
@@ -587,7 +873,7 @@ setTimeout(() => {
 }, 800);
 const roomName = await AsyncStorage.getItem('roomName')
 
-console.log(updateTime)
+
 
     firestore()
     .collection('baskets')
@@ -596,9 +882,15 @@ console.log(updateTime)
       frvg: frvg,
       mtmlk: mtmlk,
       snch: snch,
+      cupb: cupb,
+      dess: dess,
+      drinks: drinks,
+      hlth: hlth,
+      house: house,
+      kids: kids,
       updated: true,
       time: updateTime,
-      items: frvg.length + mtmlk.length + snch.length,
+      items: frvg.length+mtmlk.length+snch.length+cupb.length+dess.length+drinks.length+hlth.length+house.length+kids.length,
     }, {merge: true})
     
   }
@@ -616,22 +908,15 @@ console.log(updateTime)
           color="#EFF32B"
           />
           </View>
-          <ScrollView 
-          nestedScrollEnabled={true} 
-          style={{flex: 1, width: WIDTH}}>
           
+          <SafeAreaView style={{flex: 1, width: WIDTH}}>
           
-
           <View style={{alignItems: 'center',}}>
-            
-              
+          
           <Text style={{
             fontSize:30,
             color:'white',
-            
-            
-
-          }}>Basket Name</Text>
+            }}>{visBasket}</Text>
 
           <TouchableOpacity 
           onPress={() => navigation.navigate('Tabnavigator', {screen: 'Home'})} 
@@ -642,13 +927,26 @@ console.log(updateTime)
             }}>
               Home
             </Text>
-             </TouchableOpacity>          
+             </TouchableOpacity>
+
+          <TouchableOpacity
+          onPress={deleteBasket}
+          style={styles.deleteButton}>
+            <Text style={{
+              textAlign: 'center',
+              color: '#FF9C33'
+            }}>
+              Delete
+            </Text>
+            </TouchableOpacity>          
             <Image style={{
               width: 0.8*WIDTH,
               height: 110,
               marginTop: 22,
             }}source={require('../Assets/images/shopCatGood.gif')} />
             </View>
+
+            <HideKeyboard>
           <View style={{
               marginTop: 19,
               marginLeft: 0.1*WIDTH,
@@ -673,6 +971,8 @@ console.log(updateTime)
                   
                   
                 }}>
+
+                  
                 <TextInput
                 placeholder={'Product Search'}
                 style={styles.productSearch}
@@ -682,7 +982,7 @@ console.log(updateTime)
                 onLayout={onLayout}
                 onFocus={clearProductInput}
                 />
-
+                
                 { searching &&
                 <SearchDropDown
                 onPress={() => 
@@ -754,43 +1054,143 @@ console.log(updateTime)
             </TouchableOpacity>
 
             </View>
+            
             </View>
+
+            </HideKeyboard>
+            
+            <View>
+              <ModalPopup visible={visOrNot}>
+                <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#ffba08', '#e85d04']} style={{
+                        flex:1,
+                        borderRadius: 20,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingHorizontal: 5,
+                        paddingVertical: 5,
+
+                      }}>
+                  <View style={{
+                    flex:1,
+                    alignItems: 'center',
+                    paddingBottom: 20,
+                    backgroundColor: 'black',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 20,
+                    
+                    
+                    }}>
+                      <Text style={{
+                      color: 'white',
+                      
+                      width: '80%',
+                      textAlign: 'center',
+                      fontSize: 15,
+                      marginTop: 20,
+                      }}>Oops! Can't find product: 
+                      <Text  style={{
+                        color: '#FF9C33'
+                      }}> "{pickedProduct}"
+                      </Text>
+                      </Text>
+                      <DropDownPicker 
+                      open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        style={{
+                          backgroundColor: "#a2a4ac",
+                          flex:1,
+                        }}
+                        containerStyle={{
+                          width: '80%',
+                          height: '12%',
+                          marginTop: 30,
+                      }}
+                      placeholder="Product category"
+                      dropDownContainerStyle={{
+                        backgroundColor: "#a2a4ac"
+                      }}
+                        />
+                        <Text style={{
+                      color: '#a2a4ac',
+                      width: '80%',
+                      textAlign: 'center',
+                      fontSize: 12,
+                      marginTop: 20
+                      }}>*Once you add the product manually, it will be available for you permanently.
+                        </Text>
+                        <LinearGradient  colors={['#ffba08', '#e85d04']} style={{
+                        width:70,
+                        height:30,
+                        borderRadius: 6,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: 17
+
+                      }}> 
+                      <TouchableOpacity onPress={() => {
+                      setLoading(true),
+                      addToDb()
+                    }
+                    } style={styles.confirmButton}>
+                      <Text style={{color: 'white'}}>Add</Text>
+                      </TouchableOpacity>
+                    </LinearGradient>
+                    
+                  </View>
+                  <View style={{
+                    position: 'absolute',
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: 'black',
+                    top: -10,
+                    right: -10
+                  }}>
+                    <TouchableOpacity style={{flex:1}} onPress={() => setVisOrNot(false)}>
+                    <Icon name="circle-with-cross" size={30} color='#F45D01'/>
+                    </TouchableOpacity>
+                  </View>
+                </LinearGradient>
+
+              </ModalPopup>
+            </View>
+
             
             <View style={{
-              alignItems: 'center',
-              marginTop: 30
-            }}>
+              marginTop: 21,
+              flex:1,
               
-            </View>
-            <View style={{
-              marginTop: 21
             }}>
               <SectionList 
                sections={[
-                {title: 'Fuit & Veg', data: frvg},
-                {title: 'Meat & Milk', data: mtmlk},
-                {title: 'Snacks & Chocolate', data: snch}
+                {title: 'Fruit & Veg', data: frvg},
+                {title: 'Meats & Fish', data: mtmlk},
+                {title: 'Cupboard & Pets', data: cupb},
+                {title: 'Desserts & Bread', data: dess},
+                {title: 'Drinks', data: drinks},
+                {title: 'Snacks & Chocolate', data: snch}, // ERROR FROM HERE FOR SOME REASON
+                {title: 'Health & Beauty', data: hlth},
+                {title: 'Household', data: house},
+                {title: 'Kids', data: kids},
+                
                ]}
-               renderSectionHeader={({section}) => (
-                 <Text style={{
-                  fontSize: 20,
-                  color: 'white',
-                  fontFamily: 'Righteous-Regular',
-                  textAlign: 'center',
-                  marginBottom: 10
-                 }}>{section.title}</Text>
-    )}          
+               renderSectionHeader={({section}) => renderEachHeader(section)}          
                keyExtractor={(item) => item.key.toString()}
                extraData={isRender}
                nestedScrollEnabled={true}
-               
                ItemSeparatorComponent={separatorUnit}
                renderItem={({item, index}) => renderEachItem(item)}
               />
               
             </View>
             
-            </ScrollView>
+            </SafeAreaView>
+            
             <TouchableOpacity 
             style={styles.updateButton}
             onPress={saveData}>

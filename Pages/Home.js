@@ -20,6 +20,9 @@ import {
   import auth from '@react-native-firebase/auth'
   import { useFocusEffect } from '@react-navigation/native'
 
+  import pickerArray from '../elements/picker';
+  import randomPick from '../elements/randomPick'
+
   import {styles} from '../AllStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -29,12 +32,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
   
 
 function Home ({navigation}) {
-    const [card, setCard] =useState([
-        {basketName:'Family Basket', previewItem: require('../Assets/images/bread.png'), numberOfItems: '21', updateTime: 'Last update : 20:00', key: '1'},
-        {basketName:'My Basket', previewItem: require('../Assets/images/eggplant.png'), numberOfItems: '4', updateTime: 'Last update : 14:20', key: '2'},
-        {basketName:'Presents', previewItem: require('../Assets/images/tomato.png'), numberOfItems: '12', updateTime: 'Last update : 16:50', key: '3'}
-    ])
-
     
     const[basketNames, setBasketNames] = useState(null)
     const[temp, setTemp] = useState(null)
@@ -62,9 +59,6 @@ function Home ({navigation}) {
                     const basket = doc.data()
                     const bn = basket.basketName
                     allBasketsNames.push(bn)
-                    
-                       
-
                        setNoBaskets(false)
 
                 })
@@ -73,7 +67,7 @@ function Home ({navigation}) {
                 
             } else {
                 console.log('No Rooms for this user')
-                
+                setBasketNames(null)
                 setNoBaskets(true)
             }
         } catch(e) {
@@ -87,10 +81,13 @@ function Home ({navigation}) {
 
     
 
-    useEffect(async() => {
+    useEffect(() => {
 
-        if(basketNames === null) {
-            alert('No baskets for this user')
+        async function fetchData() {
+            if(basketNames === null) {
+            console.log('loading baskets')
+            
+            setTemp(null)
         } else {
             
             async function createList(basket) {
@@ -98,17 +95,18 @@ function Home ({navigation}) {
                 try {
         
                     const rawData = getBasket.data()
-                    
+                    console.log(temp)
                     return rawData
                 } catch (e) {
                     console.log(e)
                 }
             }
             const newData = await Promise.all(basketNames.map(createList))
+            
             setTemp(newData)
-            
-            
         }
+    }
+        fetchData()
 
         
     }, [basketNames])
@@ -130,6 +128,46 @@ function Home ({navigation}) {
         navigation.navigate('Basket')
     }
 
+    const imageSelect = () => {
+
+        const tempArray = pickerArray
+        
+        const ranNumb = randomPick[Math.floor(Math.random()*randomPick.length)]
+
+        return tempArray[ranNumb]
+       
+       
+      
+    }
+
+
+    const renderEachItem = (item) => {
+
+        function trim () {
+            if(item.room.length <= 10) {
+                return item.room
+              } else {
+                return item.room.slice(0,10) + ".."
+              }
+        }
+
+        return (
+            <TouchableOpacity style={styles.maybeBox} onPress={() => {
+                detailsSet(item.room)
+            }}>
+                <View style={{ width: 100, left: 20}}>
+                <Image source={imageSelect()} resizeMode='contain' style={{height: 80,
+            width:80, }}/>
+            </View>
+                <View style={styles.containerMaybe}>
+                    <Text style={styles.basketName}> {trim()} </Text>
+                    <Text style={styles.numberOfItems}>{item.items}</Text>
+                    <Text style={styles.updateTime}>Updated: {item.time}</Text>
+                </View>
+            
+        </TouchableOpacity>
+        )
+    }
     /* async function createList(basket) {
         const getBasket = await collectionRef.doc(basket).get()
         try {
@@ -148,7 +186,7 @@ function Home ({navigation}) {
         <View style={styles.homeBackGround}>
             <StatusBar  backgroundColor='#000000'/>
         {noBaskets && <TouchableOpacity
-        style={styles.maybeBox}
+        style={[styles.maybeBox, {justifyContent:'center', alignItems: 'center'}]}
         onPress={() => navigation.navigate('createBasket')}
         >
             <Text style={{
@@ -165,18 +203,7 @@ function Home ({navigation}) {
         }
         {ready && <FlatList
                 data={temp}
-                renderItem={({item}) => (
-                    <TouchableOpacity style={styles.maybeBox} onPress={() => {
-                        detailsSet(item.room)
-                    }}>
-                        <View style={styles.containerMaybe}>
-                            <Text style={styles.basketName}> {item.room} </Text>
-                            <Text style={styles.numberOfItems}>{item.items}</Text>
-                            <Text style={styles.updateTime}>Updated: {item.time}</Text>
-                        </View>
-                    
-                </TouchableOpacity>
-         )}
+                renderItem={({item}) => renderEachItem(item)}
          
          />}
          

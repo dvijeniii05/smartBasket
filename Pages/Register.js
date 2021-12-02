@@ -49,7 +49,8 @@ const userRegister = async () => {
             .doc(uid)
             .set({
                 userName: nickname,
-                userPass: password
+                userPass: password,
+                ID: uid
             })
 
             await AsyncStorage.setItem('authState', JSON.stringify(true))

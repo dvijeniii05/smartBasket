@@ -12,7 +12,7 @@ import {
   } from 'react-native';
   import {styles} from '../AllStyles'
   import Octicon from 'react-native-vector-icons/Octicons'
-import { color, interpolate } from 'react-native-reanimated';
+
 import { useState, useMemo } from 'react';
 
 const AnimatedIcon = Animated.createAnimatedComponent(Octicon)
@@ -20,6 +20,13 @@ const AnimatedIcon = Animated.createAnimatedComponent(Octicon)
   function ChoiceButton ({navigation, onPress}) {
       
    const mode = useMemo(() => new Animated.Value(0), [])
+
+   const [pressed, setPressed] = useState(false)
+
+   const changeWidth = () => {
+
+    setPressed(!pressed)
+   }
 
    const handlePress = () => {
        
@@ -68,13 +75,7 @@ const AnimatedIcon = Animated.createAnimatedComponent(Octicon)
 
 
     return (
-        <View style={{
-             position: 'absolute', 
-             alignItems: 'center',  
-             backgroundColor:'transparent', 
-             borderRadius: 20, 
-             width: 250,
-             }}>
+        <View style={[styles.choiceSecBox, pressed && {width: 240}]}>
 
             <View>
                 <Animated.View style={{ left: createX, top: createY,  opacity: comOpacity}} >
@@ -97,6 +98,7 @@ const AnimatedIcon = Animated.createAnimatedComponent(Octicon)
                 <TouchableOpacity onPress={() => {
                     onPress()
                     handlePress()
+                    changeWidth()
                     
                 }} >
                     <Animated.View style={{transform: [{ rotate: rotation}] }}>

@@ -46,6 +46,7 @@ import ChoiceButton from './elements/choiceButton'
 import {styles} from './AllStyles'
 import { ScreenStack } from 'react-native-screens'
 import 'react-native-gesture-handler'
+import signOut from './Pages/SignOut'
 
 
 const Stack = createStackNavigator();
@@ -65,9 +66,9 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE';
     <> 
     <View style={[styles.choiceView, buttonActive && {width:250}]}>
       
-        <ChoiceButton navigation={navigation} onPress={buttonChange}/>
-        
-    </View>
+      <ChoiceButton navigation={navigation} onPress={buttonChange}/>
+      
+  </View>
     <Tab.Navigator
     screenOptions={{
       tabBarShowLabel: false,
@@ -94,9 +95,10 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
       }}/>
       
-      <Tab.Screen  name='Browse' component={basketLogin} options={{
+      <Tab.Screen  name='Browse' component={signOut} options={{
         tabBarIcon: ({color}) => <Ionicons name='md-log-in-outline' size={36} color={color} />,
-        tabBarIconStyle: {left: 20}
+        tabBarIconStyle: {left: 20},
+        
       }}/>
     </Tab.Navigator>
     </>
@@ -153,13 +155,14 @@ function App () {
         gestureDirection: 'horizontal',
         animationTypeForReplace: 'pop'
         }} >
-        <Stack.Screen name='Tabnavigator' component={Tabnavigator}  /> 
+        <Stack.Screen name='Tabnavigator' component={Tabnavigator} options={{ gestureEnabled: false }}/> 
         <Stack.Screen name='Landing' component={Landing}/>
         <Stack.Screen name='Register' component={Register}/>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='Basket' component={Basket} options={{ gestureEnabled: false }}/>
         <Stack.Screen name='createBasket' component={Create}/>
         <Stack.Screen name='loginBasket' component={basketLogin}/>
+        
       </Stack.Navigator>
     </NavigationContainer>
     

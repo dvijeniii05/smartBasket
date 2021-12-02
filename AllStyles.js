@@ -34,15 +34,15 @@ maybeBox: {
     marginHorizontal: 35,
     height:120,
     borderRadius: 30,
-    justifyContent: 'center'
+    
+    flexDirection: 'row'
 },
 
 
 containerMaybe: {
-left:100,
-flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+left: 100,
+justifyContent: 'center',
+alignItems: 'center',
 
 },
 
@@ -280,6 +280,17 @@ homeButton: {
   
 },
 
+deleteButton: {
+  position: 'absolute',
+  right: 10,
+  width: 50,
+  height: 40,
+  backgroundColor: 'transparent',
+  
+  borderRadius: 10,
+  justifyContent: 'center',
+},
+
 addButtonText: {
   textAlign: 'center',
   fontSize: 18,
@@ -380,6 +391,14 @@ choiceView: {
   alignSelf: 'center',
   justifyContent: 'center',
   alignItems: 'center',
+},
+
+choiceSecBox: {
+  position: 'absolute', 
+  alignItems: 'center',  
+  backgroundColor:'transparent', 
+  borderRadius: 20, 
+  width: 10
 }
 
 

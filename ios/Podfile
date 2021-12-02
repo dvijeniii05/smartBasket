@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'SmartBook' do
+target 'SmartBasket' do
   config = use_native_modules!
 
   use_react_native!(
@@ -16,7 +16,7 @@ target 'SmartBook' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
-  target 'SmartBookTests' do
+  target 'SmartBasketTests' do
     inherit! :complete
     # Pods for testing
   end

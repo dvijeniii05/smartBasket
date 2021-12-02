@@ -32,9 +32,13 @@ import { useCallback } from 'react';
 
   export default function SearchDropDown (props) {
 
+    const [newProduct, setNewProduct] = useState(false)
+    
         const {data} = props
 
         const tempArray = data.slice(0,3)
+
+        
 
     return(
         
@@ -47,6 +51,7 @@ import { useCallback } from 'react';
                 zIndex: 2
                 
             }}>
+                
             {
 
                 tempArray.map(item => {
