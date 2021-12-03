@@ -96,6 +96,7 @@ import { useFocusEffect } from '@react-navigation/core';
     const [hlth, setHlth] = useState([])
     const [house, setHouse] = useState([])
     const [kids, setKids] = useState([])
+    const [totalProd, setTotalProd] = useState([])
 
 
     const [loading, setLoading] = useState(true)
@@ -183,6 +184,9 @@ import { useFocusEffect } from '@react-navigation/core';
             setHouse(data8)
             setKids(data9)
 
+            const tempArray = frvg.concat(mtmlk,snch,cupb,dess,drinks,hlth,house,kids)
+            setTotalProd(tempArray)
+
             setLoading(false)
             setReady(true)
             
@@ -226,6 +230,8 @@ import { useFocusEffect } from '@react-navigation/core';
     const [amountSearch, setAmountSearch] = useState(false)
 
     const [specs, setSpecs] = useState(null)
+
+    const [tempSpec, setTempSpec] = useState([])
 
     
 
@@ -365,6 +371,8 @@ import { useFocusEffect } from '@react-navigation/core';
             else {
             const newDATA = [...type, {productName: pickedProduct, amountOf: pickedAmount, productSpecs: specs, productPreview: nameString, key: pickedProduct+pickedAmount+specs, completed: false, productType: stringtype}]
             setSpec(newDATA)
+            console.log(type)
+            
             Keyboard.dismiss()
 
               }
@@ -577,27 +585,7 @@ try {
             triggerAction(setKids);
           break;
       }
-     /* if(stringType === 'frvg') {
-      setFrvg(prev => 
-        prev.map(
-        item => item.key === id
-        ? {...item, completed: !item.completed}
-        : item
-      ))
-        } else if (stringType === 'mtmlk') {
-          setMtmlk(prev => 
-            prev.map(
-            item => item.key === id
-            ? {...item, completed: !item.completed}
-            : item
-          ))
-        } else if (stringType === 'snch') {
-          setSnch(prev => 
-            prev.map(
-            item => item.key === id
-            ? {...item, completed: !item.completed}
-            : item
-          )) } */
+  
     
     }
     
@@ -645,16 +633,12 @@ console.log('basket deleted ')
   //* RENDER FOR EACH HEADER */
 
 const renderEachHeader = (section) => {
+
+  
   if(section.data.length > 0) {
     
     return (
-      <Text style={{
-        fontSize: 20,
-        color: 'white',
-        fontFamily: 'Righteous-Regular',
-        textAlign: 'center',
-        marginBottom: 10
-       }}>{section.title}</Text>
+      <Text style={styles.sectionStyle}>{section.title}</Text>
     )
   } else {
     return null
@@ -664,7 +648,9 @@ const renderEachHeader = (section) => {
 
   //* SPECS RENDER FOR EACH ITEM  */
 
-      const renderEachItem = (item) => {
+      const renderEachItem = (item, section) => {
+
+        
 
 function trim () {
   if(item.productName.length <= 9) {
@@ -673,6 +659,56 @@ function trim () {
     return item.productName.slice(0,9) + ".."
   }
 }
+
+const getSpec = (id, type ) => {
+  function getData (type){
+const newArray = type.filter(item => item.key === id)
+const newSpec = newArray.map(item=> {return item.productSpecs})
+
+console.log(newSpec)
+setTempSpec(newSpec)
+  }
+  const stringtype = type.toString()
+  switch(stringtype) {
+    case 'frvg':
+            getData(frvg, setFrvg)
+          break;
+
+          case 'meat':
+            getData(mtmlk, setMtmlk);
+          break;
+
+          case 'snacks':
+            getData(snch, setSnch);
+          break;
+
+          case 'cupb':
+            getData(cupb, setCupb);
+          break;
+
+          case 'dessbread':
+            getData(dess, setDess);
+          break;
+
+          case 'drinks':
+            getData(drinks, setDrinks);
+          break;
+
+          case 'hlthbty':
+            getData(hlth, setHlth);
+          break;
+
+          case 'house':
+            getData(house, setHouse);
+          break;
+
+          case 'kids':
+            getData(kids, setKids);
+          break;
+  }
+}
+
+
 
         if(item.productSpecs === null ) {
           
@@ -724,45 +760,12 @@ function trim () {
 
                 <ModalPopup visible={visible}> 
 
-                <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={{
-                        flex:1,
-                        borderRadius: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        paddingHorizontal: 5,
-                        paddingVertical: 5,
+                <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalGradient}> 
 
-                      }}> 
-
-                  <View style={{
-                    flex:1,
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                    paddingBottom: 20,
-                    backgroundColor: 'black',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 20
+                  <View style={styles.modalView}>
                     
-                    }}>
-                    
-                    <Text style={{
-                      color: 'white',
-                      position: 'absolute',
-                      top: 30,
-                      width: '75%',
-                      height: '65%',
-                      textAlign: 'center',
-                      fontSize: 16
-                      }}> {item.productSpecs}</Text>
-                    <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={{
-                        width:70,
-                        height:30,
-                        borderRadius: 6,
-                        justifyContent: 'center',
-                        alignItems: 'center'
-
-                      }}> 
+                    <Text style={styles.modalText}>{tempSpec}</Text>
+                    <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalButtonGradient}> 
                       <TouchableOpacity onPress={() => setVisible(false)} style={styles.confirmButton}>
                       <Text style={{color: '#DCE35B'}}>Okay</Text>
                       </TouchableOpacity>
@@ -798,7 +801,7 @@ function trim () {
                   alignItems: 'center'
 
                 }}>
-                  <TouchableOpacity onPress={() => setVisible(true)} style={{
+                  <TouchableOpacity onPress={() => {setVisible(true), getSpec(item.key, item.productType)}} style={{
                 
                 justifyContent: 'center',
                 backgroundColor: 'black',
@@ -1179,12 +1182,13 @@ const roomName = await AsyncStorage.getItem('roomName')
                 {title: 'Kids', data: kids},
                 
                ]}
-               renderSectionHeader={({section}) => renderEachHeader(section)}          
+               renderSectionHeader={({section}) => renderEachHeader(section)}  
+               initialNumToRender= {20}        
                keyExtractor={(item) => item.key.toString()}
                extraData={isRender}
                nestedScrollEnabled={true}
                ItemSeparatorComponent={separatorUnit}
-               renderItem={({item, index}) => renderEachItem(item)}
+               renderItem={({item, section, index}) => renderEachItem(item, section)}
               />
               
             </View>

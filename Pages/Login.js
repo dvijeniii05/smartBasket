@@ -33,6 +33,27 @@ import {
     const [nickname, setNickname] = useState(null);
     const [password, setPassword] = useState(null)
 
+    const login = async() => {
+    await auth()
+        .signInWithEmailAndPassword(nickname, password)
+        .then(async(userCredentials)=>{
+        const user = userCredentials.user
+        const uid = user.uid
+        await  AsyncStorage.setItem('uid', uid)
+        console.log('User signed in!', uid)
+        navigation.navigate('Tabnavigator', {screen: 'Home'})
+        } ) 
+        .catch(error => {
+            if(error.code === 'auth/email-already-in-use') {
+                alert('This email is in use')
+            }
+            if(error.code === 'auth/invalid-email') {
+                alert('The email address is invalid!')
+            }
+             else {console.log(error.code)}
+        })
+    }
+
     const detailsCheck = async() => {
 
         if(nickname != null && password != null) {
@@ -80,6 +101,7 @@ import {
                 <TextInput
                 style={styles.textInputBox}
                 placeholder={'Password'}
+                secureTextEntry
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setPassword(text)}
@@ -88,7 +110,7 @@ import {
                 <TouchableOpacity
                 style={styles.registerButton}
                 onPress={()=> {
-                    detailsCheck()
+                    login()
                     
                   }} >
                     <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>READY!</Text>

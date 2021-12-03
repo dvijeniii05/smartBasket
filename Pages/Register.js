@@ -21,17 +21,54 @@ import {
 
   import auth from '@react-native-firebase/auth';
   import firestore from '@react-native-firebase/firestore'
-  import firebase from '@react-native-firebase/app'
+  import { useFocusEffect } from '@react-navigation/native'
 
   import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
   function Register ({navigation}) {
       
-    const [nickname, setNickname] = useState('no');
-    const [password, setPassword] = useState('no');
+    const [nickname, setNickname] = useState('');
+    const [password, setPassword] = useState('');
 
-const userRegister = async () => {
+    
+
+const register = async () => {
+    await auth()
+    .createUserWithEmailAndPassword(nickname, password)
+    .then(async (userCredentials)=> {
+        const user = userCredentials.user
+        const uid = user.uid
+        await  AsyncStorage.setItem('uid', uid)
+
+        firestore()
+            .collection('users')
+            .doc(uid)
+            .set({
+                userName: nickname,
+                userPass: password,
+                ID: uid
+            })
+.then(()=> {
+    console.log('User accoutn created and signed in!', user)
+    navigation.navigate('Tabnavigator', { screen: 'Home' }) 
+})
+ })
+    .catch(error => {
+        if(error.code === 'auth/email-already-in-use') {
+            alert('This email is in use')
+        }
+        if(error.code === 'auth/invalid-email') {
+            alert('The email address is invalid!')
+        }
+        if(error.code === 'auth/weak-password') {
+            alert('Password should be at least 6 symbols')
+        } else {console.log(error.code)}
+    })
+    
+}
+
+ /* const userRegister = async () => {
     auth()
     .signInAnonymously()
 
@@ -67,9 +104,9 @@ const userRegister = async () => {
         
         console.error(error);
       })
-}
+} */
 
-const nickCheckAndSave = async () => {
+/* const nickCheckAndSave = async () => {
     if (nickname === 'no' || password === 'no') {
             alert('Please enter your details!')
     } else {
@@ -87,7 +124,7 @@ const nickCheckAndSave = async () => {
             alert('Something is wrong!@')
         }
     }
-}
+} */
 
     return(
         
@@ -105,6 +142,7 @@ const nickCheckAndSave = async () => {
                 <TextInput
                 style={styles.textInputBox}
                 placeholder={'Password'}
+                secureTextEntry={true}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setPassword(text)}
@@ -112,11 +150,7 @@ const nickCheckAndSave = async () => {
                 />
                 <TouchableOpacity
                 style={styles.registerButton}
-                onPress={()=> {
-                    nickCheckAndSave()
-                    userRegister()
-                    
-                  }} >
+                onPress={()=>register()} >
                     <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>READY!</Text>
                 </TouchableOpacity>
             </View>

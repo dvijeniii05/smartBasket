@@ -30,8 +30,14 @@ import {
   const {width: WIDTH} = Dimensions.get('window');
   const {height: HEIGHT} = Dimensions.get('window')
 
+  function signOutFunc () {
+    auth()
+ .signOut()
+ .then(() => console.log('User is signed out'))
+  }
+  
   function signOut ({navigation}) {
-
+ 
 
       return (
         <View style={{
@@ -63,6 +69,7 @@ import {
 
             </Text>
             <TouchableOpacity onPress={()=> {
+              signOutFunc(),
               navigation.navigate('Landing')
             }} style={{
               width: 70,

@@ -399,6 +399,52 @@ choiceSecBox: {
   backgroundColor:'transparent', 
   borderRadius: 20, 
   width: 10
+},
+
+sectionStyle:{
+  fontSize: 20,
+  color: 'white',
+  fontFamily: 'Righteous-Regular',
+  textAlign: 'center',
+  marginBottom: 10
+},
+
+modalGradient: {
+  flex:1,
+  borderRadius: 20,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 5,
+  paddingVertical: 5,
+},
+
+modalView:{
+  flex:1,
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+  paddingBottom: 20,
+  backgroundColor: 'black',
+  width: '100%',
+  height: '100%',
+  borderRadius: 20
+},
+
+modalText: {
+  color: 'white',
+  position: 'absolute',
+  top: 30,
+  width: '75%',
+  height: '65%',
+  textAlign: 'center',
+  fontSize: 16
+},
+
+modalButtonGradient: {
+  width:70,
+  height:30,
+  borderRadius: 6,
+  justifyContent: 'center',
+  alignItems: 'center'
 }
 
 
