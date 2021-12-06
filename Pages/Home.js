@@ -14,17 +14,15 @@ import {
     SafeAreaView,
   
   } from 'react-native';
-
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
-  import auth from '@react-native-firebase/auth'
   import { useFocusEffect } from '@react-navigation/native'
 
-  import pickerArray from '../elements/picker';
-  import randomPick from '../elements/randomPick'
+  import images from '../Assets/images/index';
+  import { scaledHeight, scaledWidth } from '../elements/sizeScale';
 
   import {styles} from '../AllStyles'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  import AsyncStorage from '@react-native-async-storage/async-storage';
 
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
@@ -130,14 +128,16 @@ function Home ({navigation}) {
 
     const imageSelect = () => {
 
-        const tempArray = pickerArray
-        
-        const ranNumb = randomPick[Math.floor(Math.random()*randomPick.length)]
-
-        return tempArray[ranNumb]
+        const tempArray = images
+        const arr = []
+        for(const key in tempArray){
+            arr.push(key)
+           }
+        const ranNumb = Math.floor(Math.random()*264)
+        const randName = arr[ranNumb]
+        console.log(randName)
+        return images[`${randName}`]
        
-       
-      
     }
 
 
@@ -155,9 +155,9 @@ function Home ({navigation}) {
             <TouchableOpacity style={styles.maybeBox} onPress={() => {
                 detailsSet(item.room)
             }}>
-                <View style={{ width: 100, left: 20}}>
-                <Image source={imageSelect()} resizeMode='contain' style={{height: 80,
-            width:80, }}/>
+                <View style={{ width: scaledWidth('20%'), left: scaledWidth('2%'),}}>
+                <Image source={imageSelect()} resizeMode='contain' style={{height: scaledHeight('11.5%'),
+            width:scaledWidth('20%'), }}/>
             </View>
                 <View style={styles.containerMaybe}>
                     <Text style={styles.basketName}> {trim()} </Text>

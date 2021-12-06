@@ -2,23 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
+    
     View,
     StatusBar,
-    ImageBackground,
-    Button,
     Image,
     Text,
     TouchableOpacity,
-    ScrollView,
     Dimensions,
     TextInput,
-    FlatList,
     Pressable,
     SectionList,
-    LogBox,
     ActivityIndicator,
-    Modal,
     SafeAreaView,
     Keyboard,
     TouchableWithoutFeedback
@@ -28,31 +22,21 @@ import {
   import AmountDropDown from '../elements/AmountDropDown'
   import {styles} from '../AllStyles'
   
-
   import Octicon from 'react-native-vector-icons/Octicons'
   import Icon from 'react-native-vector-icons/Entypo'
-  
 
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
   
   import format from 'date-fns/format'
-
-  import productData from '../elements/productData'
   import images from '../Assets/images/index'
-  import pickerArray from '../elements/picker';
   import ModalPopup from '../elements/ModaPopUp';
   import SQlite from 'react-native-sqlite-storage'
   import DropDownPicker from 'react-native-dropdown-picker'
+  import {scaledWidth, scaledHeight} from '../elements/sizeScale'
   
-  
+  import LinearGradient from 'react-native-linear-gradient';
 
-import { useCallback } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
-import { useFocusEffect } from '@react-navigation/core';
-
-
-  
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
   
@@ -60,15 +44,10 @@ import { useFocusEffect } from '@react-navigation/core';
   successcb = () => {
     console.log('database open')
   }
-
   errorcb = () => {
     console.log('failed')
   }
-
-  
-  
   const sqldb = SQlite.openDatabase({name: 'dbMaybe.db', createFromLocation: '~dbMaybe.db'}, successcb, errorcb)
-  
   
   const HideKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -96,13 +75,13 @@ import { useFocusEffect } from '@react-navigation/core';
     const [hlth, setHlth] = useState([])
     const [house, setHouse] = useState([])
     const [kids, setKids] = useState([])
-    const [totalProd, setTotalProd] = useState([])
-
+    
+    const [firstTime, setFirstTime] = useState(false)
 
     const [loading, setLoading] = useState(true)
 
     const [basketName, setBasketName] = useState(null)
-    const [ready, setReady] = useState(false)
+    
     const [visBasket, setVisBasket] = useState(null)
 
     const [visible, setVisible] = useState(false)
@@ -125,12 +104,22 @@ import { useFocusEffect } from '@react-navigation/core';
     
 
     useEffect(() => {
+      async function firstTimeHere() {
+        const first = await AsyncStorage.getItem('firstTime')
+        const parsedFirst = JSON.parse(first)
 
+        if(parsedFirst === null) {
+          console.log('Tut?', parsedFirst)
+          setFirstTime(true)
+          console.log(firstTime)
+        } else {
+          console.log('zdes', firstTime, parsedFirst)
+          setFirstTime(false)}
+      }
       async function fetchData() {
         setLoading(true)
 
         const roomName = await AsyncStorage.getItem('roomName')
-  
         setBasketName(roomName)
 
         const visualBasket = () => {if(roomName.length <= 12) {
@@ -184,11 +173,8 @@ import { useFocusEffect } from '@react-navigation/core';
             setHouse(data8)
             setKids(data9)
 
-            const tempArray = frvg.concat(mtmlk,snch,cupb,dess,drinks,hlth,house,kids)
-            setTotalProd(tempArray)
-
             setLoading(false)
-            setReady(true)
+            
             
           }
   
@@ -213,6 +199,7 @@ import { useFocusEffect } from '@react-navigation/core';
       }
       
       fetchData()
+      firstTimeHere()
       
 
   }, [])
@@ -232,10 +219,6 @@ import { useFocusEffect } from '@react-navigation/core';
     const [specs, setSpecs] = useState(null)
 
     const [tempSpec, setTempSpec] = useState([])
-
-    
-
-    const [iconLink, setIconLink] = useState(null)
 
     const [isRender, setIsRender] = useState(false)
 
@@ -262,52 +245,26 @@ import { useFocusEffect } from '@react-navigation/core';
       if (text) {
          setSearching(true)
          const temp = text.toLowerCase()
-
          const tempProductNames = database.map(item =>  {
-           
           return item.name
       }) 
       setProductNames(tempProductNames)
          const tempList = tempProductNames.filter(item => {
            if(item.match(temp)) {
            return item
-           } else {
-             setPickedProduct(temp)
-             
            }
          })
           setFiltered(tempList)
-          
-
        } else {
           setSearching(false)
           setFiltered(productNames)
       }
     };
 
-    const onAmount = (text) => {
-      if(text) {
-        setAmountSearch(true)
-        const temp = text.toLowerCase()
-
-        const tempList = amount.filter(item => {
-          if(item.match(temp))
-          return item  //  ADD ELSE STATEMENT TO BE THE SAME AS PICKEDPRODUCT
-        })
-          setAmountFilt(tempList)
-          
-      } else {
-        setAmountSearch(false)
-        setAmountFilt(amount)
-      }
-    };
 
     const onLayout = (event) => {
       const {width} = event.nativeEvent.layout
-
-      
       setSearchWidth(width)
-      
     }
 
 
@@ -472,21 +429,6 @@ import { useFocusEffect } from '@react-navigation/core';
       } else {
         alert('You cannot delete products in this basket')
       }
-      /* const prodType = type.toString() 
-      if(prodType === 'frvg') {
-      const afterDeleting = frvg.filter(item => item.key !== id)
-      setFrvg(afterDeleting)
-      } 
-      else if (prodType === 'mtmlk') {
-        const afterDeleting = mtmlk.filter(item => item.key !== id)
-      setMtmlk(afterDeleting)
-      } 
-      else if (prodType === 'snch') {
-        const afterDeleting = snch.filter(item => item.key !== id)
-      setSnch(afterDeleting)
-      }} else {
-        alert('You cannot delete products in this basket')
-      } */
     }
 
     const clearProductInput = () => {
@@ -530,6 +472,12 @@ try {
   alert(err)
 }
   
+ }
+
+ async function firstFunc(){
+   console.log('Bred!')
+  await AsyncStorage.setItem('firstTime', JSON.stringify(false))
+  setFirstTime(false)
  }
 
     //* CHECKBOX PART */
@@ -660,6 +608,15 @@ function trim () {
   }
 }
 
+function trimAmount () {
+  if(item.amountOf.length <= 5) {
+    return item.amountOf
+  } else {
+    return item.amountOf.slice(0,5) + "."
+  }
+
+}
+
 const getSpec = (id, type ) => {
   function getData (type){
 const newArray = type.filter(item => item.key === id)
@@ -707,15 +664,12 @@ setTempSpec(newSpec)
           break;
   }
 }
-
-
-
         if(item.productSpecs === null ) {
           
         return (
           <View style={{
             flexDirection: 'row',
-            marginHorizontal: 0.125*WIDTH,
+            marginHorizontal: scaledWidth('8%'),
             marginBottom: 10,
             alignItems: 'center'
             
@@ -723,11 +677,11 @@ setTempSpec(newSpec)
             <Image source={imageSelect(item.productPreview)} resizeMode='contain' style={{height: 20,
             width: 20,}} />
             <Text style={[styles.productList, {
-              marginLeft: 30, width: 80
+              marginLeft: scaledWidth('7%'), width: scaledWidth('21%')
             }]} >{trim()}</Text>
             <Text style={[styles.productList, {
-              marginLeft: 30,  width: 50
-            }]}>{item.amountOf}</Text>
+              marginLeft: scaledWidth('6%'),  width: scaledWidth('12%')
+            }]}>{trimAmount()}</Text>
             
             <CheckBox
               
@@ -735,7 +689,7 @@ setTempSpec(newSpec)
               type={item.productType}
               completed={item.completed}
               triggerSelect={triggerSelect}
-              style={{marginLeft: 85}}
+              style={{marginLeft: scaledWidth('21%')}}
               />
 
             {admin && 
@@ -744,7 +698,7 @@ setTempSpec(newSpec)
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginLeft: 15
+                    marginLeft: scaledWidth('4%')
                 }}>
           
                     <Icon name="circle-with-cross" size={20} color='#F45D01'/>
@@ -763,7 +717,7 @@ setTempSpec(newSpec)
                 <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalGradient}> 
 
                   <View style={styles.modalView}>
-                    
+                  
                     <Text style={styles.modalText}>{tempSpec}</Text>
                     <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalButtonGradient}> 
                       <TouchableOpacity onPress={() => setVisible(false)} style={styles.confirmButton}>
@@ -779,37 +733,37 @@ setTempSpec(newSpec)
 
             <View style={{
               flexDirection: 'row',
-              marginHorizontal: 0.125*WIDTH,
+              marginHorizontal: scaledWidth('8%'),
               marginBottom: 10,
               alignItems: 'center',
             }}> 
               <Image source={imageSelect(item.productPreview)} resizeMode='contain' style={{height: 20,
               width: 20,}} />
               <Text style={[styles.productList, {
-                marginLeft: 30, width: 80
+                marginLeft: scaledWidth('7%'), width: scaledWidth('21%'),
               }]} >{trim()}</Text>
               <Text style={[styles.productList, {
-                marginLeft: 30,  width: 50
-              }]}>{item.amountOf}</Text>
+                marginLeft: scaledWidth('6%'),  width: scaledWidth('12%'), 
+              }]}>{trimAmount()}</Text>
               
               
                 <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={{
-                  width:50,
+                  width:scaledWidth('13%'),
                   height:25,
-                  marginLeft: 20,
+                  marginLeft: scaledWidth('4%'),
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
 
                 }}>
                   <TouchableOpacity onPress={() => {setVisible(true), getSpec(item.key, item.productType)}} style={{
                 
                 justifyContent: 'center',
                 backgroundColor: 'black',
-                width: 45,
+                width: scaledWidth('11'),
                 height: 20
               }}> 
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: scaledHeight('2%'),
                     fontWeight: 'bold',
                     textAlign: 'center',
                     color: '#DCE35B'
@@ -833,7 +787,7 @@ setTempSpec(newSpec)
             style={{
               justifyContent: 'center',
               alignItems: 'center',
-              marginLeft: 15
+              marginLeft: scaledWidth('4%')
         }}>
           
           <Icon name="circle-with-cross" size={20} color='#F45D01'/>
@@ -869,6 +823,7 @@ setTempSpec(newSpec)
   //* UPDATE BUTTON TO SAVE DATA TO FIRESTORE */
 
   const saveData = async () => {
+    
 setLoading(true)
 const updateTime = format(new Date(), 'dd MMM, HH:mm')
 setTimeout(() => {
@@ -950,8 +905,9 @@ const roomName = await AsyncStorage.getItem('roomName')
             </View>
 
             <HideKeyboard>
+              
           <View style={{
-              marginTop: 19,
+              marginTop: scaledHeight('2.7%'),
               marginLeft: 0.1*WIDTH,
               marginRight: 0.1*WIDTH,
               flexDirection: 'row',
@@ -961,21 +917,16 @@ const roomName = await AsyncStorage.getItem('roomName')
               }}>
             <View style={{
               flex: 2,
-              paddingRight: 20,
+              paddingRight: scaledWidth('5%'),
               justifyContent: 'space-between',
               height: 120
-
             }}>
 
             <View style={{
                   height:35,
                   flexDirection: 'row',
                   position: 'relative',
-                  
-                  
                 }}>
-
-                  
                 <TextInput
                 placeholder={'Product Search'}
                 style={styles.productSearch}
@@ -984,6 +935,8 @@ const roomName = await AsyncStorage.getItem('roomName')
                 value={pickedProduct}
                 onLayout={onLayout}
                 onFocus={clearProductInput}
+                autoComplete={'off'}
+                autoCorrect={false}
                 />
                 
                 { searching &&
@@ -997,9 +950,6 @@ const roomName = await AsyncStorage.getItem('roomName')
                 }
 
             </View>
-
-                
-
             <View style={{
                   height:35,
                   flexDirection: 'row',
@@ -1010,12 +960,11 @@ const roomName = await AsyncStorage.getItem('roomName')
                   placeholder={'Amount'}
                   style={styles.amountSearch}
                   placeholderTextColor={'#a2a4ac'}
-                  onChangeText={onAmount}
+                  onChangeText={setPickedAmount}
                   value={pickedAmount}
                   onLayout={onLayout}
                   onFocus={clearAmountInput}
                   />
-
 
                   { amountSearch &&
                   <AmountDropDown
@@ -1028,12 +977,10 @@ const roomName = await AsyncStorage.getItem('roomName')
                   } 
 
             </View>
-            
             <View style={{
               height: 35, 
               flexDirection: 'row',
               position: 'relative',
-              
               }}> 
                 <TextInput
                 placeholder={'Specify'}
@@ -1043,13 +990,11 @@ const roomName = await AsyncStorage.getItem('roomName')
                 value={specs}
                 onFocus={clearSpecsInput}
                 />
-
             </View>
-            
             </View>
             <View style= {{
               flex: 1,
-              height: 80,
+              height: scaledHeight('11.5%'),
               }}>
 
             <TouchableOpacity style={styles.addButton} onPress={addNewProduct}>
@@ -1057,12 +1002,30 @@ const roomName = await AsyncStorage.getItem('roomName')
             </TouchableOpacity>
 
             </View>
-            
             </View>
-
             </HideKeyboard>
-            
             <View>
+            {firstTime && <ModalPopup visible={firstTime}>
+            
+            <View style={{
+              flex:1,
+              alignItems:'center',
+              borderRadius: 15,
+              borderWidth:5,
+              }}>
+                <View style={{flex:1, justifyContent:'center'}}>
+            <Text style={{color: 'white', fontSize:18}}>Welcome to smartBasket!</Text>
+                </View>
+                <View style={{flex:2, justifyContent:'center',}}>
+            <Text style={{color:'white', textAlign: 'center', fontSize:16}}>Please make sure to press button <Text style={{color:'#F45D01'}}>"Confirm"</Text> once all products are picked.</Text>
+                </View>
+                <View style={{flex:1, justifyContent:'center'}}>
+                  <TouchableOpacity onPressIn={()=> firstFunc()} style={[styles.confirmButton, {backgroundColor:'#45B649'}]}>
+                    <Text style={{color:'black'}}>Okay</Text>
+                  </TouchableOpacity>
+                </View>
+            </View>
+          </ModalPopup>}
               <ModalPopup visible={visOrNot}>
                 <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#ffba08', '#e85d04']} style={{
                         flex:1,

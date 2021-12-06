@@ -4,7 +4,7 @@ import {StyleSheet, Dimensions, StatusBar,} from  'react-native'
 
 const {width: WIDTH} = Dimensions.get('window');
 const {height: HEIGHT} = Dimensions.get('window');
-
+import {scaledWidth, scaledHeight} from './elements/sizeScale'
 const styles= StyleSheet.create ({
 
 homeBackGround: {
@@ -40,7 +40,7 @@ maybeBox: {
 
 
 containerMaybe: {
-left: 100,
+left: scaledWidth('18%'),
 justifyContent: 'center',
 alignItems: 'center',
 
@@ -48,23 +48,17 @@ alignItems: 'center',
 
 basketName: {
   color: '#a2a4ac',
-  fontSize: 15,
-  
-  
+  fontSize: scaledHeight('2.3%'),
 },
 
 numberOfItems: {
   color: '#efeef2',
-  fontSize: 40,
-  
-  
-  
+  fontSize: scaledHeight('5.8%'),
 },
 
 updateTime: {
   color: '#a2a4ac',
-  fontSize: 10,
-  
+  fontSize: scaledHeight('1.6%'),
 },
 
 wordItems: {
@@ -240,7 +234,7 @@ eachItemView: {
 },
 
 productList: {
-  fontSize: 14,
+  fontSize: scaledHeight('2%'),
   color: 'white',
   fontFamily: 'Righteous-Regular',
   textAlign: 'center',
@@ -248,13 +242,13 @@ productList: {
 
 checkBox: {
   height: 20,
-    width: 20,
+    width: scaledWidth('5%'),
     borderRadius: 3,
     borderWidth: 2,
     borderColor: '#FF9C33',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 15
+    marginLeft: scaledWidth('4%')
 },
 
 addButton: {
@@ -262,7 +256,7 @@ addButton: {
   backgroundColor: 'transparent',
   justifyContent: 'center',
   borderRadius: 25,
-  margin: 15,
+  margin: scaledWidth('4%'),
   borderWidth: 3,
   borderColor: '#FF9C33'
   

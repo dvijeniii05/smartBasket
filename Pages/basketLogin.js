@@ -32,9 +32,7 @@ function basketLogin ({navigation}) {
 
     const [roomName, setRoomName] = useState('');
     const [roomPass, setRoomPass] = useState('');
-
-    
-
+    const [noKey, setNoKey] = useState(true)
     
 const detailsCheck = async() => {
     const snapshot = await collectionRef.where('room', '==', roomName).get()
@@ -67,9 +65,6 @@ const detailsCheck = async() => {
         }
     }
 }
-
-
-
 const roomUpdate = async(uid) => {
     firestore()
     .collection('baskets')
@@ -77,12 +72,9 @@ const roomUpdate = async(uid) => {
     .collection('userList')
     .doc(uid)
     .set({
-        
         id: uid,
         basketName: roomName
-
     })
-    
 }
 
 const userUpdate = async (uid) => {
@@ -95,31 +87,39 @@ const userUpdate = async (uid) => {
         basketName: roomName
     })
 }
+
+function changeView(){
+    setNoKey(!noKey)
+}
     
     
     return (
         <View style={styles.createBackGround}>
             <View style={styles.createBasket}>
+            {noKey &&
             <Text style = {styles.enterOrCreateText}>.enterBasket</Text>
+            }
                 <View style={styles.registerStyle}>
-    
                 <TextInput
                 style={styles.textInputBox}
                 placeholder={'Basket name'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomName(text)}
+                onPressIn={()=> changeView()}
+                onSubmitEditing={()=> changeView()}
                 />
-                
-                
                 <TextInput
                 style={styles.textInputBox}
                 placeholder={'Password'}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomPass(text)}
+                onPressIn={()=> changeView()}
+                onSubmitEditing={()=> changeView()}
                 />
                 </View>
+                {noKey && 
                 <TouchableOpacity 
                 style ={styles.registerButton}
                 onPress={() => {
@@ -128,6 +128,7 @@ const userUpdate = async (uid) => {
                 }}>
                     <Text style={{textAlign: 'center', fontWeight: 'bold'}}>Enter</Text>
                 </TouchableOpacity>
+                }
                 
             </View>
         </View>

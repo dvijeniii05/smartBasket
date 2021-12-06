@@ -17,19 +17,12 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import Octicon from 'react-native-vector-icons/Octicons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import React, { useState, useEffect } from 'react';
+import { SafeAreaProvider, S } from 'react-native-safe-area-context'
+import React, { useState,  } from 'react';
 import {
-  StyleSheet,
+  
   View,
-  StatusBar,
-  ImageBackground,
-  Button,
-  Image,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
+ 
 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,10 +34,10 @@ import Landing from './Pages/Landing'
 import Register from './Pages/Register'
 import Basket from './Pages/Basket'
 import Login from './Pages/Login'
-import Choice from './Pages/CreateOrLogin'
+
 import ChoiceButton from './elements/choiceButton'
 import {styles} from './AllStyles'
-import { ScreenStack } from 'react-native-screens'
+
 import 'react-native-gesture-handler'
 import signOut from './Pages/SignOut'
 
@@ -144,11 +137,8 @@ function App () {
     <NavigationContainer 
     initialState={initialState}
       onStateChange={(state) =>
-
         AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
-
-      }
-    >
+      }>
       <Stack.Navigator initialRouteName='Landing' screenOptions={{
         headerShown: false, 
         gestureEnabled: true, 

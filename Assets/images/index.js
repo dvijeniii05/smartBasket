@@ -1,11 +1,5 @@
 const images  = {
-   /* logos: {
-        apple: require('./frvg/apple.png'),
-        watermelon: require('./frvg/watermelon.png'),
-        pineapple: require('./frvg/pineapple.png'),
-        plum: require('./frvg/plum.png'),
-        newProduct: require('./newProduct.png')
-    }, */
+   
     'apple':require('./allProducts/frvg/apple.png'),
     'apricot':require('./allProducts/frvg/apricot.png'),
     'artichoke':require('./allProducts/frvg/artichoke.png'),

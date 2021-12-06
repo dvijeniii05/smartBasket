@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  StyleSheet,
-  Button,
   Modal,
-  Image,
-  Text,
-  TouchableOpacity,
   Animated,
 } from 'react-native';
 

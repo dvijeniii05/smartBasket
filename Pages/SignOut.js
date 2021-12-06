@@ -1,32 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-    StyleSheet,
     View,
-    StatusBar,
-    ImageBackground,
-    Button,
-    Image,
     Text,
     TouchableOpacity,
-    ScrollView,
     Dimensions,
-    TextInput,
-    
-  
-  } from 'react-native';
-
-  import Home from '../Pages/Home';
-
-  import {styles} from '../AllStyles'
+    } from 'react-native';
 
   import auth from '@react-native-firebase/auth';
-  import firestore from '@react-native-firebase/firestore'
+  
   import firebase from '@react-native-firebase/app'
 
-  import AsyncStorage from '@react-native-async-storage/async-storage'
-
-  const db = firebase.firestore()
-  const collectionRef = db.collection('users')
   const {width: WIDTH} = Dimensions.get('window');
   const {height: HEIGHT} = Dimensions.get('window')
 
@@ -35,7 +18,7 @@ import {
  .signOut()
  .then(() => console.log('User is signed out'))
   }
-  
+
   function signOut ({navigation}) {
  
 

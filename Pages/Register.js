@@ -133,7 +133,7 @@ const register = async () => {
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}
-                    placeholder={'Username'}
+                    placeholder={'Email'}
                     underlineColorAndroid='transparent'
                     placeholderTextColor={'#ECEFFA'}
                     onChangeText={text =>  setNickname(text)}
