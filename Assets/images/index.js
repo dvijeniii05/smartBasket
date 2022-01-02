@@ -285,6 +285,12 @@ const images  = {
     'teething':require('./allProducts/kids/dummies.png'),
     'diapers':require('./allProducts/kids/nappies.png'),
 
+    'butter':require('./allProducts/dairy/butter.png'),
+    'spread':require('./allProducts/dairy/spread.png'),
+    'fresh cream':require('./allProducts/dairy/freshCream.png'),
+    'cheese':require('./allProducts/dairy/cheese.png'),
+    'yoghurt':require('./allProducts/dairy/yoghurt.png'),
+
     'bacon':require('./allProducts/meat/bacon.png'),
     'beef':require('./allProducts/meat/beef.png'),
     'burgers':require('./allProducts/meat/burgers.png'),
@@ -345,6 +351,8 @@ const images  = {
     'shortbread':require('./allProducts/snacks/shortbread.png'),
     'snickers':require('./allProducts/snacks/chocolateBar.png'),
     'twix':require('./allProducts/snacks/chocolateBar.png'),
+
+    'newProduct': require('./allProducts/newProduct.png')
 }
 
 export default images

@@ -34,16 +34,15 @@ maybeBox: {
     marginHorizontal: 35,
     height:120,
     borderRadius: 30,
-    
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-around'
 },
 
 
 containerMaybe: {
-left: scaledWidth('18%'),
-justifyContent: 'center',
+justifyContent: 'space-evenly',
 alignItems: 'center',
-
+flexDirection: 'column'
 },
 
 basketName: {
@@ -88,7 +87,6 @@ createBackGround: {
     height: null,
   paddingVertical: 160,
   paddingHorizontal: 50,
-  
   justifyContent: 'center',
   alignItems: 'center',
   
@@ -248,7 +246,6 @@ checkBox: {
     borderColor: '#FF9C33',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: scaledWidth('4%')
 },
 
 addButton: {
@@ -301,7 +298,6 @@ landingPage: {
 logoMaybe: {
   height: 128,
   width: 128,
-  tintColor: '#F45D01',
   marginTop: 150
   
 },
@@ -430,7 +426,7 @@ modalText: {
   width: '75%',
   height: '65%',
   textAlign: 'center',
-  fontSize: 16
+  fontSize: 16,
 },
 
 modalButtonGradient: {
@@ -439,6 +435,41 @@ modalButtonGradient: {
   borderRadius: 6,
   justifyContent: 'center',
   alignItems: 'center'
+},
+
+indicator: {
+  height: 2.5,
+    width: 10,
+    backgroundColor: 'grey',
+    marginHorizontal: 3,
+    borderRadius: 2,
+},
+
+btn: {
+  width: '40%',
+    height: 50,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+},
+
+searchDropDown: {
+  position: 'absolute',
+  top: 37,
+  backgroundColor: 'black',
+  zIndex: 2,
+  flex:1
+},
+
+searchEachItem: {
+  flexDirection: 'row',
+  backgroundColor: '#121216',
+  marginVertical: 2,
+  paddingLeft: 20,
+  borderRadius: 5,
+  height: 30,
+  alignItems:'center'
 }
 
 

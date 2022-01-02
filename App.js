@@ -14,16 +14,13 @@ import {
    import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import Icon from 'react-native-vector-icons/AntDesign'
-import Octicon from 'react-native-vector-icons/Octicons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
-import { SafeAreaProvider, S } from 'react-native-safe-area-context'
-import React, { useState,  } from 'react';
+import { SafeAreaProvider, } from 'react-native-safe-area-context'
+import React, { useState} from 'react';
 import {
-  
   View,
- 
-
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -34,9 +31,12 @@ import Landing from './Pages/Landing'
 import Register from './Pages/Register'
 import Basket from './Pages/Basket'
 import Login from './Pages/Login'
+import OnboardingScreen from './Pages/OnboardingScreen'
+import HelpScreen from './Pages/HelpScreen'
 
 import ChoiceButton from './elements/choiceButton'
 import {styles} from './AllStyles'
+import SplashScreen from 'react-native-splash-screen'
 
 import 'react-native-gesture-handler'
 import signOut from './Pages/SignOut'
@@ -49,7 +49,7 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE';
  function Tabnavigator ({navigation}) {
 
   const [buttonActive, setButtonActive] = useState(false)
-
+  
   const buttonChange = () => {
     setButtonActive(!buttonActive)
   }
@@ -88,8 +88,8 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
       }}/>
       
-      <Tab.Screen  name='Browse' component={signOut} options={{
-        tabBarIcon: ({color}) => <Ionicons name='md-log-in-outline' size={36} color={color} />,
+      <Tab.Screen  name='Logout' component={signOut} options={{
+        tabBarIcon: ({color}) => <MaterialIcons name='logout' size={31} color={color} />,
         tabBarIconStyle: {left: 20},
         
       }}/>
@@ -103,6 +103,7 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 function App () {
   const [isReady, setIsReady] = React.useState(false);
   const [initialState, setInitialState] = React.useState();
+  const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
 
   React.useEffect(() => {
     const restoreState = async () => {
@@ -113,15 +114,30 @@ function App () {
         
         if (state !== undefined) {
           setInitialState(state);
-          
+          setTimeout(() => {SplashScreen.hide()}, 2000)
         }
 
       } finally {
         setIsReady(true);
+        setTimeout(() => {SplashScreen.hide()}, 2000)
+        
       }
     };
 
+    const firstLaunchData = async () => {
+      const appData = await AsyncStorage.getItem('isAppFirstLaunched');
+    if (appData == null) {
+      setIsAppFirstLaunched(true);
+      AsyncStorage.setItem('isAppFirstLaunched', 'false');
+    } else {
+      setIsAppFirstLaunched(false);
+    }
+
+    // AsyncStorage.removeItem('isAppFirstLaunched');
+    }
+
     if (!isReady) {
+      firstLaunchData()
       restoreState();
     }
   }, [isReady]);
@@ -131,7 +147,7 @@ function App () {
   }
 
   return(
-    
+    isAppFirstLaunched != null && (
     <SafeAreaProvider>
       
     <NavigationContainer 
@@ -139,12 +155,15 @@ function App () {
       onStateChange={(state) =>
         AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
       }>
-      <Stack.Navigator initialRouteName='Landing' screenOptions={{
+      <Stack.Navigator  screenOptions={{
         headerShown: false, 
         gestureEnabled: true, 
         gestureDirection: 'horizontal',
         animationTypeForReplace: 'pop'
         }} >
+          {isAppFirstLaunched && (
+            <Stack.Screen name='Onboarding' component={OnboardingScreen}/>
+          )}
         <Stack.Screen name='Tabnavigator' component={Tabnavigator} options={{ gestureEnabled: false }}/> 
         <Stack.Screen name='Landing' component={Landing}/>
         <Stack.Screen name='Register' component={Register}/>
@@ -152,12 +171,13 @@ function App () {
         <Stack.Screen name='Basket' component={Basket} options={{ gestureEnabled: false }}/>
         <Stack.Screen name='createBasket' component={Create}/>
         <Stack.Screen name='loginBasket' component={basketLogin}/>
+        <Stack.Screen name='helpScreen' component={HelpScreen}/>
         
       </Stack.Navigator>
     </NavigationContainer>
     
     </SafeAreaProvider>
-    
+    )
   )
 }
 

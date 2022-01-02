@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     StyleSheet,
     View,
@@ -22,7 +22,7 @@ import {
               <StatusBar  backgroundColor='#000000'/>
               <View style={styles.landingPage}>
                 <Image style={styles.logoMaybe}
-                source={require('../Assets/Logo/maybe.png')}/>
+                source={require('../Assets/Logo/smartBasket.png')}/>
                 <Text style={styles.logoText}>.smartBasket</Text>
                 <View style={styles.landingMargin}>
               <TouchableOpacity
@@ -37,7 +37,7 @@ import {
               style={styles.landingButtons}
               onPress={() => navigation.navigate('Login')}
               >
-            <Text style={{textAlign: 'center',color: 'black', fontWeight: 'bold'}}>Log In</Text>
+            <Text style={{textAlign: 'center',color: 'black', fontWeight: 'bold'}}>Sign In</Text>
             </TouchableOpacity>
             </View>
               </View>

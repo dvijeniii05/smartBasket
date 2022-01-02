@@ -1,13 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import React, { useState,} from 'react';
+import React, { useEffect, useState,} from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     TextInput,
-    KeyboardAvoidingView,
-    Platform
+    Keyboard
   } from 'react-native';
 
   import {styles} from '../AllStyles'
@@ -18,14 +17,15 @@ import { useFocusEffect } from '@react-navigation/native';
   
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
- 
+  
   
 function Create ({navigation}) {
 
     const [roomName, setRoomName] = useState('');
     const [roomPass, setRoomPass] = useState('');
     const [uid, setUid] = useState(null)
-    const [noKey, setNoKey] = useState(true)
+
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false)
 
     useFocusEffect(
         React.useCallback(() => {
@@ -37,9 +37,26 @@ function Create ({navigation}) {
             settingUid()
         }, [])
     )
-    function changeView(){
-        setNoKey(!noKey)
-    }
+
+    useEffect(()=> {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true)
+            }
+        )
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false)
+            }
+        )
+            return () => {
+                keyboardDidHideListener.remove()
+                keyboardDidShowListener.remove()
+            }
+    }, [])
+
     const detailsCheck = async () => {
         const snapshot = await collectionRef.where('room', '==', roomName).get()
         if(snapshot.empty) {
@@ -61,6 +78,7 @@ function Create ({navigation}) {
         alert('This basket name is taken')
     }
     }
+
     const roomGen = async () => {
         firestore()
         .collection('baskets')
@@ -94,8 +112,9 @@ function Create ({navigation}) {
     return (
         
         <View style={styles.createBackGround}>
+            
             <View style={styles.createBasket}>
-                {noKey &&
+                {!isKeyboardVisible &&
                 <Text style = {styles.enterOrCreateText}>.createBasket</Text>
                 }
                 <View style={styles.registerStyle}>
@@ -105,8 +124,8 @@ function Create ({navigation}) {
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomName(text)}
-                onPressIn={()=> changeView()}
-                onSubmitEditing={()=> changeView()}
+                autoCapitalize='none'
+                
                 />
                 <TextInput
                 style={styles.textInputBox}
@@ -114,10 +133,10 @@ function Create ({navigation}) {
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomPass(text)}
-                onPressIn={()=> changeView()}
-                onSubmitEditing={()=> changeView()}
+                
                 />
-                </View>{noKey && 
+                </View>
+                {!isKeyboardVisible && 
                 <TouchableOpacity 
                 style ={styles.registerButton}
                 onPress={() => {
@@ -129,6 +148,7 @@ function Create ({navigation}) {
                 }
                 
             </View>
+            
         </View>
     )
 }

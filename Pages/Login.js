@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     View,
     StatusBar,
-    ImageBackground,
-    Button,
-    Image,
     Text,
     TouchableOpacity,
-    ScrollView,
-    Dimensions,
     TextInput,
-    
+    Keyboard,
+    ActivityIndicator
   
   } from 'react-native';
-
-  import Home from '../Pages/Home';
 
   import {styles} from '../AllStyles'
 
@@ -32,8 +25,30 @@ import {
 
     const [nickname, setNickname] = useState(null);
     const [password, setPassword] = useState(null)
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true)
+            }
+        )
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false)
+            }
+        )
+            return () => {
+                keyboardDidHideListener.remove()
+                keyboardDidShowListener.remove()
+            }
+    }, [])
 
     const login = async() => {
+        setLoading(true)
     await auth()
         .signInWithEmailAndPassword(nickname, password)
         .then(async(userCredentials)=>{
@@ -41,62 +56,49 @@ import {
         const uid = user.uid
         await  AsyncStorage.setItem('uid', uid)
         console.log('User signed in!', uid)
+        setLoading(false)
         navigation.navigate('Tabnavigator', {screen: 'Home'})
         } ) 
         .catch(error => {
+            setLoading(false)
             if(error.code === 'auth/email-already-in-use') {
                 alert('This email is in use')
             }
+            if(error.code === 'auth/user-not-found') {
+                alert('The email is not found')
+            }
             if(error.code === 'auth/invalid-email') {
                 alert('The email address is invalid!')
+            }
+            if(error.code === 'auth/wrong-password') {
+                alert('Oops, password is incorrect')
             }
              else {console.log(error.code)}
         })
     }
 
-    const detailsCheck = async() => {
-
-        if(nickname != null && password != null) {
-
-        const snapshot = await collectionRef.where('userName', '==', nickname).get()
-        auth()
-        .signInAnonymously()
-        
-
-        .then
-        if (snapshot.empty) {
-            alert('User doesnt exist')
-        } else {
-            try {
-
-                const docCheck = snapshot.docs[0].data()
-
-                    if(docCheck.userPass === password) {
-
-                        navigation.navigate('Tabnavigator', {screen: 'Home'})
-
-                    } else {
-                        alert('Incorrect password')
-                    }
-            } catch {
-                alert('something else is wrong')
-            }
-        }
-
-    } else {alert('Please input Nickname and Password')}
-
-    }
         return (
-            <View style={styles.createBackGround}>
+            <View style={[styles.createBackGround, loading && {opacity: 0.7}]
+            }>
             <StatusBar  backgroundColor='#000000'/>
+            <View style={styles.loader}>
+          <ActivityIndicator
+          animating={loading}
+          size="large"
+          color="#EFF32B"
+          />
+          </View>
+            {!isKeyboardVisible &&
+            <Text style = {styles.enterOrCreateText}>Sign in</Text>
+            }
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}
                     placeholder={'Username'}
                     underlineColorAndroid='transparent'
                     placeholderTextColor={'#ECEFFA'}
-                    onChangeText={text =>  setNickname(text)}
-                    
+                    onChangeText={text =>  setNickname(text.toLowerCase())}
+                    keyboardType='email-address'
                     />
                 <TextInput
                 style={styles.textInputBox}
@@ -105,8 +107,8 @@ import {
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setPassword(text)}
-                
                 />
+                {!isKeyboardVisible &&
                 <TouchableOpacity
                 style={styles.registerButton}
                 onPress={()=> {
@@ -115,6 +117,8 @@ import {
                   }} >
                     <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>READY!</Text>
                 </TouchableOpacity>
+                }
+                
             </View>
         </View>
         )

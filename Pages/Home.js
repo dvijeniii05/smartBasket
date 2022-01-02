@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     View,
     StatusBar,
-    ImageBackground,
-    Button,
     Image,
     Text,
     TouchableOpacity,
-    ScrollView,
-    Dimensions,
     FlatList,
-    SafeAreaView,
+    BackHandler
   
   } from 'react-native';
   import firestore from '@react-native-firebase/firestore'
@@ -19,10 +14,12 @@ import {
   import { useFocusEffect } from '@react-navigation/native'
 
   import images from '../Assets/images/index';
-  import { scaledHeight, scaledWidth } from '../elements/sizeScale';
+  import ModalPopup from '../elements/ModaPopUp';
+  import OnboardingScreen from './OnboardingScreen'
 
   import {styles} from '../AllStyles'
   import AsyncStorage from '@react-native-async-storage/async-storage';
+import { scaledHeight, scaledWidth } from '../elements/sizeScale';
 
   const db = firebase.firestore();
   const collectionRef = db.collection('baskets')
@@ -35,6 +32,7 @@ function Home ({navigation}) {
     const[temp, setTemp] = useState(null)
     const[ready, setReady] = useState(false)
     const[noBaskets, setNoBaskets] = useState(true)
+    const[firstTime, setFirstTime] = useState(false)
     
 
     useFocusEffect(
@@ -81,6 +79,19 @@ function Home ({navigation}) {
 
     useEffect(() => {
 
+        async function firstTimeHere() {
+            const first = await AsyncStorage.getItem('firstTimeHome')
+            const parsedFirst = JSON.parse(first)
+    
+            if(parsedFirst === null) {
+              console.log('Tut?', parsedFirst)
+              setFirstTime(true)
+              console.log(firstTime)
+            } else {
+              console.log('zdes', firstTime, parsedFirst)
+              setFirstTime(false)}
+          }
+
         async function fetchData() {
             if(basketNames === null) {
             console.log('loading baskets')
@@ -105,7 +116,7 @@ function Home ({navigation}) {
         }
     }
         fetchData()
-
+        firstTimeHere()
         
     }, [basketNames])
 
@@ -117,14 +128,23 @@ function Home ({navigation}) {
         }
     }, [temp])
 
+    useEffect(()=> {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
+
     const detailsSet = async(room) => {
-
-
         await AsyncStorage.setItem('roomName', room)
 
         .then 
         navigation.navigate('Basket')
     }
+
+    async function firstFunc(){
+        console.log('Bred!')
+       await AsyncStorage.setItem('firstTimeHome', JSON.stringify(false))
+       setFirstTime(false)
+      }
 
     const imageSelect = () => {
 
@@ -155,10 +175,10 @@ function Home ({navigation}) {
             <TouchableOpacity style={styles.maybeBox} onPress={() => {
                 detailsSet(item.room)
             }}>
-                <View style={{ width: scaledWidth('20%'), left: scaledWidth('2%'),}}>
-                <Image source={imageSelect()} resizeMode='contain' style={{height: scaledHeight('11.5%'),
-            width:scaledWidth('20%'), }}/>
-            </View>
+                <View style={{ width: '28%'}}>
+                    <Image source={imageSelect()} resizeMode='contain' style={{height: '100%',
+                        width:'100%', }}/>
+                </View>
                 <View style={styles.containerMaybe}>
                     <Text style={styles.basketName}> {trim()} </Text>
                     <Text style={styles.numberOfItems}>{item.items}</Text>
@@ -168,23 +188,43 @@ function Home ({navigation}) {
         </TouchableOpacity>
         )
     }
-    /* async function createList(basket) {
-        const getBasket = await collectionRef.doc(basket).get()
-        try {
-
-            const rawData = getBasket.data()
-            
-            return rawData
-        } catch (e) {
-            console.log(e)
-        }
-    }
-    const newData = await Promise.all(basketNames.map(createList))
-    setTemp(newData)  */
 
     return (
         <View style={styles.homeBackGround}>
             <StatusBar  backgroundColor='#000000'/>
+            <View style={{backgroundColor:'transparent', alignItems:'flex-end'}}>
+            <TouchableOpacity onPress={()=> navigation.navigate('helpScreen')} style={{
+             backgroundColor:'transparent', 
+             height: scaledHeight('5%'), 
+             width: scaledWidth('22%'),
+             marginTop: scaledHeight('2%'),
+             borderRadius:10,
+             alignItems:'center',
+             justifyContent:'center'}}>
+            <Text style={{color:'#FF9C33', fontWeight:'600', fontSize:scaledHeight('1.9%')}}>Need Help?</Text>
+         </TouchableOpacity>
+         </View>
+         {firstTime && <ModalPopup visible={firstTime} heightParam='50%'>
+            
+            <View style={{
+              flex:1,
+              alignItems:'center',
+              borderRadius: 15,
+              borderWidth:5,
+              }}>
+                <View style={{flex:1, justifyContent:'center'}}>
+            <Text style={{color: 'white', fontSize:18}}>Well, you are here!</Text>
+                </View>
+                <View style={{flex:2, justifyContent:'center',}}>
+            <Text style={{color:'white', textAlign: 'center', fontSize:16}}>If you wish to create a new basket press the "Create Basket" button or tap the <Text style={{color:'#F45D01'}}>"+"</Text> sign to create. If you wish to login an existing basket, please tap the <Text style={{color:'#F45D01'}}>"+"</Text> sign and <Text style={{color:'#F45D01'}}>".enter"</Text> button after it. </Text>
+                </View>
+                <View style={{flex:1, justifyContent:'center'}}>
+                  <TouchableOpacity onPressIn={()=> firstFunc()} style={[styles.confirmButton, {backgroundColor:'#45B649'}]}>
+                    <Text style={{color:'black'}}>Okay</Text>
+                  </TouchableOpacity>
+                </View>
+            </View>
+          </ModalPopup>}   
         {noBaskets && <TouchableOpacity
         style={[styles.maybeBox, {justifyContent:'center', alignItems: 'center'}]}
         onPress={() => navigation.navigate('createBasket')}
@@ -207,14 +247,7 @@ function Home ({navigation}) {
          
          />}
          
-            {/* <View style={styles.maybeBox}>
-            <Text style={styles.mainText}> Family Basket </Text>
-            <Image source={cardOneItem} style={styles.previewItem}/>
-            <Text style={styles.numberOfItems}>21</Text>
-           {/*<Text style={styles.wordItems}>items</Text>  
-           <Text style={styles.updateTime}> Last update : 20:00</Text> 
-               
-            </View> */} 
+         
         </View>
     )
 }

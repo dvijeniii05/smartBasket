@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     View,
     StatusBar,
-    ImageBackground,
-    Button,
-    Image,
     Text,
     TouchableOpacity,
-    ScrollView,
-    Dimensions,
     TextInput,
+    Keyboard,
+    ActivityIndicator
     
-  
   } from 'react-native';
-
-  import Home from '../Pages/Home';
-
   import {styles} from '../AllStyles'
 
   import auth from '@react-native-firebase/auth';
   import firestore from '@react-native-firebase/firestore'
-  import { useFocusEffect } from '@react-navigation/native'
 
   import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -30,10 +21,31 @@ import {
       
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
 
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true)
+            }
+        )
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false)
+            }
+        )
+            return () => {
+                keyboardDidHideListener.remove()
+                keyboardDidShowListener.remove()
+            }
+    }, [])
     
 
 const register = async () => {
+    setLoading(true)
     await auth()
     .createUserWithEmailAndPassword(nickname, password)
     .then(async (userCredentials)=> {
@@ -50,11 +62,13 @@ const register = async () => {
                 ID: uid
             })
 .then(()=> {
+    setLoading(false)
     console.log('User accoutn created and signed in!', user)
     navigation.navigate('Tabnavigator', { screen: 'Home' }) 
 })
  })
     .catch(error => {
+        setLoading(false)
         if(error.code === 'auth/email-already-in-use') {
             alert('This email is in use')
         }
@@ -67,76 +81,28 @@ const register = async () => {
     })
     
 }
-
- /* const userRegister = async () => {
-    auth()
-    .signInAnonymously()
-
-    .then(() =>
-    firebase.auth().onAuthStateChanged(async (user)=> {
-        if (user) {
-            const uid = user.uid;
-            await AsyncStorage.setItem('uid', uid)
-            
-
-            .then
-
-            firestore()
-            .collection('users')
-            .doc(uid)
-            .set({
-                userName: nickname,
-                userPass: password,
-                ID: uid
-            })
-
-            await AsyncStorage.setItem('authState', JSON.stringify(true))
-            const maybe = await AsyncStorage.getItem('uid')
-            console.log(maybe)
-            
-        } else {
-            // User is signed out!
-        }
-
-    })
-    ) 
-    .catch(error => {
-        
-        console.error(error);
-      })
-} */
-
-/* const nickCheckAndSave = async () => {
-    if (nickname === 'no' || password === 'no') {
-            alert('Please enter your details!')
-    } else {
-        try{
-            await AsyncStorage.setItem('nickname', JSON.stringify(nickname))
-
-            const maybeNick = await AsyncStorage.getItem('nickname')
-            const parseNick = JSON.parse(maybeNick)
-            
-            console.log(parseNick)
-
-            navigation.navigate('Tabnavigator', { screen: 'Home' })
-        } catch (e) {
-            console.log(e)
-            alert('Something is wrong!@')
-        }
-    }
-} */
-
     return(
         
-        <View style={styles.createBackGround}>
+        <View style={[styles.createBackGround, loading && {opacity: 0.7}]}>
             <StatusBar  backgroundColor='#000000'/>
+            <View style={styles.loader}>
+          <ActivityIndicator
+          animating={loading}
+          size="large"
+          color="#EFF32B"
+          />
+          </View>
+            {!isKeyboardVisible &&
+            <Text style = {styles.enterOrCreateText}>Sign up</Text>
+            }
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}
                     placeholder={'Email'}
                     underlineColorAndroid='transparent'
                     placeholderTextColor={'#ECEFFA'}
-                    onChangeText={text =>  setNickname(text)}
+                    keyboardType='email-address'
+                    onChangeText={text =>  setNickname(text.toLowerCase())}
                     
                     />
                 <TextInput
@@ -148,11 +114,17 @@ const register = async () => {
                 onChangeText={text =>  setPassword(text)}
                 
                 />
+                {!isKeyboardVisible &&
                 <TouchableOpacity
                 style={styles.registerButton}
-                onPress={()=>register()} >
+                onPress={()=> {
+                    register()
+                    
+                  }} >
                     <Text style={{textAlign: 'center', color: 'black', fontWeight: 'bold'}}>READY!</Text>
                 </TouchableOpacity>
+                }
+                
             </View>
         </View>
     )

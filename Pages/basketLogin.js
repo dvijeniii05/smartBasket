@@ -2,17 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     View,
-    StatusBar,
-    ImageBackground,
-    Button,
-    Image,
     Text,
     TouchableOpacity,
-    ScrollView,
-    Dimensions,
     TextInput,
+    Keyboard
   
   } from 'react-native';
 
@@ -26,13 +20,32 @@ import {
   const collectionRef = db.collection('baskets')
   const user = firebase.auth().currentUser
   
-
-
 function basketLogin ({navigation}) {
+
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true)
+            }
+        )
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false)
+            }
+        )
+            return () => {
+                keyboardDidHideListener.remove()
+                keyboardDidShowListener.remove()
+            }
+    }, [])
+    
 
     const [roomName, setRoomName] = useState('');
     const [roomPass, setRoomPass] = useState('');
-    const [noKey, setNoKey] = useState(true)
     
 const detailsCheck = async() => {
     const snapshot = await collectionRef.where('room', '==', roomName).get()
@@ -87,16 +100,11 @@ const userUpdate = async (uid) => {
         basketName: roomName
     })
 }
-
-function changeView(){
-    setNoKey(!noKey)
-}
-    
-    
+  
     return (
         <View style={styles.createBackGround}>
             <View style={styles.createBasket}>
-            {noKey &&
+            {!isKeyboardVisible &&
             <Text style = {styles.enterOrCreateText}>.enterBasket</Text>
             }
                 <View style={styles.registerStyle}>
@@ -106,8 +114,7 @@ function changeView(){
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomName(text)}
-                onPressIn={()=> changeView()}
-                onSubmitEditing={()=> changeView()}
+                autoCapitalize='none'
                 />
                 <TextInput
                 style={styles.textInputBox}
@@ -115,11 +122,9 @@ function changeView(){
                 underlineColorAndroid='transparent'
                 placeholderTextColor={'#ECEFFA'}
                 onChangeText={text =>  setRoomPass(text)}
-                onPressIn={()=> changeView()}
-                onSubmitEditing={()=> changeView()}
                 />
                 </View>
-                {noKey && 
+                {!isKeyboardVisible && 
                 <TouchableOpacity 
                 style ={styles.registerButton}
                 onPress={() => {

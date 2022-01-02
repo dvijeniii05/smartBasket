@@ -1,10 +1,12 @@
 import {Dimensions, PixelRatio} from 'react-native';
+
 const scaledWidth = widthPercent => {
   const screenWidth = Dimensions.get('window').width;
   // Convert string input to decimal number
   const elemWidth = parseFloat(widthPercent);
   return PixelRatio.roundToNearestPixel(screenWidth * elemWidth / 100);
 };
+
 const scaledHeight = heightPercent => {
   const screenHeight = Dimensions.get('window').height;
   // Convert string input to decimal number

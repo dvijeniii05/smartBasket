@@ -5,7 +5,7 @@ import {
   Animated,
 } from 'react-native';
 
-export default function ModalPopup ({visible, children}) {
+export default function ModalPopup ({visible, children, heightParam}) {
 
     const [showModal, setShowModal] = useState(visible)
 
@@ -44,10 +44,9 @@ export default function ModalPopup ({visible, children}) {
             }}>
                 <Animated.View style={[{
                     width: '60%',
-                    height: '40%',
+                    height: heightParam,
                     backgroundColor: 'black',
                     borderWidth:5,
-                    
                     elevation: 20,
                 }, {transform: [{scale: scaleValue}]}]}>
                     {children}
