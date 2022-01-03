@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>956411425691-4823nl7068e9smbtp92gkork1mj1140d.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.956411425691-4823nl7068e9smbtp92gkork1mj1140d</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>956411425691-3ng1fvlc8mi9teg3hfdnb8b1gcpel6ai.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBHi0wlO9p7PT14gtVd2gR4WFO9q4ZNeBg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>956411425691</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.SmartBook</string>
+	<key>PROJECT_ID</key>
+	<string>smartbasket-2da9c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>smartbasket-2da9c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:956411425691:ios:5c70ea0195116d83b6e73e</string>
+</dict>
+</plist>
