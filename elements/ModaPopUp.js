@@ -18,23 +18,14 @@ export default function ModalPopup ({visible, children, heightParam}) {
     const toggleModal = () => {
         if(visible) {
             setShowModal(true);
-            Animated.spring(scaleValue, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true
-            }).start()
+            
         } else {
-            setTimeout(() => setShowModal(false), 200)
-            Animated.timing(scaleValue, {
-                toValue:0,
-                duration: 300,
-                useNativeDriver: true
-            }).start()
+            setShowModal(false)
         }
     };
-
+    
     return(
-        <Modal transparent visible={showModal}>
+        <Modal transparent visible={showModal} hardwareAccelerated={true}>
             <View style= {{
                 flex: 1,
                 backgroundColor: 'transparent',
@@ -42,15 +33,15 @@ export default function ModalPopup ({visible, children, heightParam}) {
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <Animated.View style={[{
+                <View style={{
                     width: '60%',
                     height: heightParam,
                     backgroundColor: 'black',
                     borderWidth:5,
-                    elevation: 20,
-                }, {transform: [{scale: scaleValue}]}]}>
+                    borderRadius: 25
+                }}>
                     {children}
-                </Animated.View>
+                </View>
             </View>
         </Modal>
     )

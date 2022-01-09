@@ -137,6 +137,7 @@ const images  = {
     'bread':require('./allProducts/dessbread/bread.png'),
     'breadmaking':require('./allProducts/dessbread/breadmaking.png'),
     'cake decoration':require('./allProducts/dessbread/cakeDecoration.png'),
+    'cake':require('./allProducts/dessbread/cake.png'),
     'cocoa powder':require('./allProducts/dessbread/cocoaPowder.png'),
     'croissant':require('./allProducts/dessbread/croissant.png'),
     'custard':require('./allProducts/dessbread/custard.png'),

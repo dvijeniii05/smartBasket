@@ -132,7 +132,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.smartbasket"
+        applicationId "com.dvijeniii05.smartbasket"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

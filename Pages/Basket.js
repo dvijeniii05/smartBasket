@@ -15,7 +15,8 @@ import {
     ActivityIndicator,
     SafeAreaView,
     Keyboard,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Modal
   
   } from 'react-native';
   import SearchDropDown from '../elements/SearchDropDown'
@@ -24,6 +25,7 @@ import {
   
   import Octicon from 'react-native-vector-icons/Octicons'
   import Icon from 'react-native-vector-icons/Entypo'
+  import AntDesign from 'react-native-vector-icons/AntDesign'
 
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
@@ -85,7 +87,8 @@ import {
     
     const [visBasket, setVisBasket] = useState(null)
 
-    const [visible, setVisible] = useState(false)
+    const [visibleNoneSpec, setVisibleNoneSpec] = useState(false)
+    const [visibleSpec, setVisibleSpec] = useState(false)
     const [visOrNot, setVisOrNot] = useState(false)
     const [isKeyboardVisible, setKeyboardVisible] = useState(false)
 
@@ -112,7 +115,6 @@ import {
         if(parsedFirst === null) {
           console.log('Tut?', parsedFirst)
           setFirstTime(true)
-          console.log(firstTime)
         } else {
           console.log('zdes', firstTime, parsedFirst)
           setFirstTime(false)}
@@ -582,7 +584,7 @@ try {
           <Pressable
           onPress={onPress}
           style={[styles.checkBox, style,
-          completed && {backgroundColor: '#FF9C33'}]}
+          completed && {backgroundColor: '#45B649', borderColor:'#45B649'}]}
           >
             {completed && <Octicon name="check" size={18} color='black' style={{position: 'absolute'}}/>}
           </Pressable>
@@ -709,25 +711,21 @@ setTempAmount(newAmount)
           
         return (
           <View>
-            <ModalPopup visible={visible} heightParam='40%'> 
+            <ModalPopup visible={visibleNoneSpec} heightParam='40%'> 
+              <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalGradient}> 
 
-          <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalGradient}> 
+                <View style={styles.modalView}>
+                <Text style={styles.modalText}>{tempName} : {tempAmount} {'\n'}{tempSpec}</Text>
+                  <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalButtonGradient}> 
+                    <TouchableOpacity onPress={() => {setVisibleNoneSpec(false), setLoading(false)}} style={styles.confirmButton}>
+                       <Text style={{color: '#DCE35B'}}>Okay</Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                </View>
 
-            <View style={styles.modalView}>
-            
-              <Text style={styles.modalText}>{tempName} : {tempAmount} {'\n'}{tempSpec}</Text>
-              <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalButtonGradient}> 
-                <TouchableOpacity onPress={() => setVisible(false)} style={styles.confirmButton}>
-                <Text style={{color: '#DCE35B'}}>Okay</Text>
-                </TouchableOpacity>
               </LinearGradient>
-
-            </View>
-
-            </LinearGradient>
-
-          </ModalPopup> 
-          <TouchableOpacity onPress={() => {setVisible(true), getSpec(item.key, item.productType)}}style={{
+            </ModalPopup> 
+          <TouchableOpacity onPress={() => {setVisibleNoneSpec(true),setLoading(true), getSpec(item.key, item.productType)}}style={{
             flexDirection: 'row',
             marginHorizontal: scaledWidth('5%'),
             marginBottom: 10,
@@ -741,9 +739,9 @@ setTempAmount(newAmount)
                width: '27%'
             }]} >{trim()}</Text>
             <Text style={[styles.productList, {
-                width: '12%'
+                width: '15%'
             }]}>{trimAmount()}</Text>
-            <View style={{width: '14%',  height: 25}}></View>
+            <View style={{width: '7%',  height: 25}}></View>
             <CheckBox
               
               id={item.key}
@@ -759,9 +757,7 @@ setTempAmount(newAmount)
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
-                    
                 }}>
-          
                     <Icon name="circle-with-cross" size={20} color='#F45D01'/>
               
                </TouchableOpacity>
@@ -774,7 +770,7 @@ setTempAmount(newAmount)
             
             <View>
 
-                <ModalPopup visible={visible} heightParam='40%'> 
+                <ModalPopup visible={visibleSpec} heightParam='40%'> 
 
                 <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalGradient}> 
 
@@ -782,7 +778,7 @@ setTempAmount(newAmount)
                   
                     <Text style={styles.modalText}>{tempName} : {tempAmount} {'\n'}{tempSpec}</Text>
                     <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={styles.modalButtonGradient}> 
-                      <TouchableOpacity onPress={() => setVisible(false)} style={styles.confirmButton}>
+                      <TouchableOpacity onPress={() => {setVisibleSpec(false), setLoading(false)}} style={styles.confirmButton}>
                       <Text style={{color: '#DCE35B'}}>Okay</Text>
                       </TouchableOpacity>
                     </LinearGradient>
@@ -793,7 +789,7 @@ setTempAmount(newAmount)
 
                 </ModalPopup> 
 
-            <TouchableOpacity onPress={() => {setVisible(true), getSpec(item.key, item.productType)}}style={{
+            <TouchableOpacity onPress={() => {setVisibleSpec(true), setLoading(true), getSpec(item.key, item.productType)}}style={{
               flexDirection: 'row',
               marginHorizontal: scaledWidth('5%'),
               marginBottom: 10,
@@ -805,36 +801,29 @@ setTempAmount(newAmount)
               <Image source={imageSelect(item.productPreview)} resizeMode='contain' style={{height: 20,
               width: 20,}} />
               <Text style={[styles.productList, {
-                 width: '27%', 
+                 width: '27%'
               }]} >{trim()}</Text>
               <Text style={[styles.productList, {
-                  width: '12%', 
+                  width: '15%'
               }]}>{trimAmount()}</Text>
               
               
-                <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#DCE35B', '#45B649']} style={{
-                  width:'14%',
+                <View style={{
+                  width:'7%',
                   height:25,
-                  
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}>
-                  <TouchableOpacity onPress={() => {setVisible(true), getSpec(item.key, item.productType)}} style={{
-                
+                  <View style={{
                 justifyContent: 'center',
-                backgroundColor: 'black',
-                width: '85%',
-                height: 20
+                alignItems:'center',
+                flex:1,
+                height: 20,
               }}> 
-                  <Text style={{
-                    fontSize: scaledHeight('2%'),
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    color: '#DCE35B'
-                  }}>note</Text>
+                  <AntDesign name='star' color='#ffb703' size={17}/>
 
-                  </TouchableOpacity>
-                </LinearGradient>
+                  </View>
+                </View>
               <CheckBox
                 
                 id={item.key}
@@ -1090,7 +1079,7 @@ const roomName = await AsyncStorage.getItem('roomName')
                 </View>
             </View>
           </ModalPopup>}
-              <ModalPopup visible={visOrNot}>
+              <ModalPopup visible={visOrNot} heightParam='40%'>
                 <LinearGradient start={{x:0, y:0}} end={{x:1, y:0}} colors={['#ffba08', '#e85d04']} style={{
                         flex:1,
                         borderRadius: 20,

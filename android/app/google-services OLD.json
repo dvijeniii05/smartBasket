@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:956411425691:android:97abb1c571201fc3b6e73e",
         "android_client_info": {
-          "package_name": "com.smartbasket"
+          "package_name": "com.dvijeniii05.smartbasket"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "956411425691-3ng1fvlc8mi9teg3hfdnb8b1gcpel6ai.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.smartbasket",
+            "package_name": "com.dvijeniii05.smartbasket",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
