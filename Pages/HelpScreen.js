@@ -102,7 +102,7 @@ const HelpScreen = ({navigation}) => {
     }
     return(
     <SafeAreaView style={{flex:1, backgroundColor:'#000000'}}>
-        <StatusBar backgroundColor='#000000'/>
+        <StatusBar barStyle="light-content"/>
         <FlatList
             onMomentumScrollEnd={updateCurrentSlideIndex}
             ref={ref}

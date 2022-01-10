@@ -114,9 +114,7 @@ function Create ({navigation}) {
         <View style={styles.createBackGround}>
             
             <View style={styles.createBasket}>
-                {!isKeyboardVisible &&
                 <Text style = {styles.enterOrCreateText}>.createBasket</Text>
-                }
                 <View style={styles.registerStyle}>
                 <TextInput
                 style={styles.textInputBox}

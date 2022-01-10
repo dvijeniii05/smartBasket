@@ -6,8 +6,8 @@ import {
     Text,
     TouchableOpacity,
     FlatList,
-    BackHandler
-  
+    BackHandler,
+    SafeAreaView
   } from 'react-native';
   import firestore from '@react-native-firebase/firestore'
   import firebase from '@react-native-firebase/app'
@@ -190,13 +190,13 @@ function Home ({navigation}) {
     }
 
     return (
-        <View style={styles.homeBackGround}>
-            <StatusBar  backgroundColor='#000000'/>
+        <SafeAreaView style={styles.homeBackGround}>
+            <StatusBar barStyle="light-content" />
             <View style={{backgroundColor:'transparent', alignItems:'flex-end'}}>
             <TouchableOpacity onPress={()=> navigation.navigate('helpScreen')} style={{
              backgroundColor:'transparent', 
              height: scaledHeight('5%'), 
-             width: scaledWidth('22%'),
+             width: scaledWidth('28%'),
              marginTop: scaledHeight('2%'),
              borderRadius:10,
              alignItems:'center',
@@ -248,7 +248,7 @@ function Home ({navigation}) {
          />}
          
          
-        </View>
+        </SafeAreaView>
     )
 }
 export default Home;

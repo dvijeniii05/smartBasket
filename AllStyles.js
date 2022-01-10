@@ -377,7 +377,7 @@ choiceView: {
   height:100, 
   backgroundColor: 'transparent', 
   zIndex: 99,
-  bottom: 10,
+  bottom: 25,
   alignSelf: 'center',
   justifyContent: 'center',
   alignItems: 'center',

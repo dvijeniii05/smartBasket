@@ -84,7 +84,7 @@ const register = async () => {
     return(
         
         <View style={[styles.createBackGround, loading && {opacity: 0.7}]}>
-            <StatusBar  backgroundColor='#000000'/>
+            <StatusBar  barStyle="light-content"/>
             <View style={styles.loader}>
           <ActivityIndicator
           animating={loading}
@@ -92,9 +92,7 @@ const register = async () => {
           color="#EFF32B"
           />
           </View>
-            {!isKeyboardVisible &&
             <Text style = {styles.enterOrCreateText}>Sign up</Text>
-            }
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}

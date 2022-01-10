@@ -80,7 +80,7 @@ import {
         return (
             <View style={[styles.createBackGround, loading && {opacity: 0.7}]
             }>
-            <StatusBar  backgroundColor='#000000'/>
+            <StatusBar  bbarStyle="light-content"/>
             <View style={styles.loader}>
           <ActivityIndicator
           animating={loading}
@@ -88,9 +88,7 @@ import {
           color="#EFF32B"
           />
           </View>
-            {!isKeyboardVisible &&
             <Text style = {styles.enterOrCreateText}>Sign in</Text>
-            }
             <View style={styles.registerStyle}>
                 <TextInput
                     style={styles.textInputBox}

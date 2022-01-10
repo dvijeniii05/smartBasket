@@ -19,7 +19,7 @@ import {
   function Landing ({navigation}) {
       return (
           <View style={styles.homeBackGround}>
-              <StatusBar  backgroundColor='#000000'/>
+              <StatusBar  barStyle="light-content"/>
               <View style={styles.landingPage}>
                 <Image style={styles.logoMaybe}
                 source={require('../Assets/Logo/smartBasket.png')}/>

@@ -13,6 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		201E03C67C79BF92595C450D /* libPods-SmartBasket-SmartBasketTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F504DB9EB349E2FE163E68E3 /* libPods-SmartBasket-SmartBasketTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C52A5953278B7CE50004FCD1 /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 975A13D1809F4809B7F3A5F7 /* Righteous-Regular.ttf */; };
 		C5E07722278316A200B51520 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C5E07721278316A200B51520 /* GoogleService-Info.plist */; };
 		C5EDA52F2783190D00E9B4B0 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 581D12166BDE44A78F2E0814 /* Roboto-Thin.ttf */; };
 		E52B12195D4B9BFF9C9CBD72 /* libPods-SmartBasket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FA7AC2CFCB9DA193BC546 /* libPods-SmartBasket.a */; };
@@ -313,6 +314,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C52A5953278B7CE50004FCD1 /* Righteous-Regular.ttf in Resources */,
 				C5EDA52F2783190D00E9B4B0 /* Roboto-Thin.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,

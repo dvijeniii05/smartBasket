@@ -104,9 +104,7 @@ const userUpdate = async (uid) => {
     return (
         <View style={styles.createBackGround}>
             <View style={styles.createBasket}>
-            {!isKeyboardVisible &&
             <Text style = {styles.enterOrCreateText}>.enterBasket</Text>
-            }
                 <View style={styles.registerStyle}>
                 <TextInput
                 style={styles.textInputBox}
